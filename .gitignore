@@ -33,3 +33,6 @@
 
 dist
 build
+
+.idea
+cmake-build-*
