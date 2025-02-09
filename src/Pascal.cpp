@@ -256,6 +256,7 @@ struct Pascal : Module {
             outputs[COUNTER3_TRIG3_OUTPUT].setVoltage(trig3 && (val % divisions[2] == 3) ? 10.0 : 0.0);
             outputs[COUNTER3_TRIG4_OUTPUT].setVoltage(trig3 && (val % divisions[2] == 4) ? 10.0 : 0.0);
             outputs[COUNTER3_TRIG5_OUTPUT].setVoltage(trig3 && (val % divisions[2] == 5) ? 10.0 : 0.0);
+            outputs[COUNTER3_TRIG6_OUTPUT].setVoltage(trig3 && (val % divisions[2] == 6) ? 10.0 : 0.0);
 
             lights[COUNTER3_INDICATOR_LIGHT].setBrightnessSmooth(trig3 ? 1.0 : 0.0, args.sampleTime);
             lights[COUNTER3_INDICATOR1_LIGHT].setBrightnessSmooth(trig3 && (val % divisions[2] == 6) ? 1.0 : 0.0, args.sampleTime);
