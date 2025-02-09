@@ -165,12 +165,12 @@ jobs:
           cd metamodule
           cmake -B build -G Ninja -DMETAMODULE_SDK_DIR=../metamodule-plugin-sdk -DINSTALL_DIR=${{ github.workspace }}/metamodule-plugins
           cmake --build build
-          cd ${{ github.workspace }}/metamodule-plugins/
-          if [ "${{ inputs.plugin }}" == "./" ]; then for f in *.mmplugin; do mv $f ${f%.mmplugin}-${{ env.CI_REF_NAME }}.mmplugin; done; else for f in *.mmplugin; do mv $f ${{ env.CI_REF_NAME }}.mmplugin; done; fi
+#          cd ${{ github.workspace }}/metamodule-plugins/
+#          if [ "${{ inputs.plugin }}" == "./" ]; then for f in *.mmplugin; do mv $f ${f%.mmplugin}-${{ env.CI_REF_NAME }}.mmplugin; done; else for f in *.mmplugin; do mv $f ${{ env.CI_REF_NAME }}.mmplugin; done; fi
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          path: ${{ github.workspace }}/metamodule-plugins/*.mmplugin
+          path: ${{ github.workspace }}/metamodule-plugins/wildergarden.mmplugin
           name: metamodule-linux-build
 #
 #      - name: Release
