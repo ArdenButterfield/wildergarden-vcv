@@ -239,13 +239,13 @@ struct Pascal : Module {
         {
             bool trig1 = clockState && (val % divisions[0]);
             lights[COUNTER1_INDICATOR_LIGHT].setBrightnessSmooth(trig1 ? 1.0 : 0.0, args.sampleTime);
-            outputs[COUNTER1_TRIGGER_OUTPUT].setVoltage(trig1 ? 1.0 : 0.0);
+            outputs[COUNTER1_TRIGGER_OUTPUT].setVoltage(trig1 ? 10.0 : 0.0);
         }
 
         {
             bool trig2 = clockState && (val % divisions[1]);
             lights[COUNTER2_INDICATOR_LIGHT].setBrightnessSmooth(trig2 ? 1.0 : 0.0, args.sampleTime);
-            outputs[COUNTER2_TRIGGER_OUTPUT].setVoltage(trig2 ? 1.0 : 0.0);
+            outputs[COUNTER2_TRIGGER_OUTPUT].setVoltage(trig2 ? 10.0 : 0.0);
         }
 
         {
