@@ -28,7 +28,7 @@ target_include_directories(wildergarden
     ${SOURCE_DIR}
 )
 
-set_property(TARGET wildergarden CXX_STANDARD 20)
+set_property(TARGET wildergarden PROPERTY CXX_STANDARD 20)
 
 create_plugin(
         SOURCE_LIB wildergarden

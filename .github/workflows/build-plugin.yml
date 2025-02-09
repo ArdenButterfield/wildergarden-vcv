@@ -125,7 +125,7 @@ jobs:
     strategy:
       matrix:
         gcc: [ '12.3.Rel1' ]  # can add other versions if needed
-    name: "Build firmware on linux"
+    name: "Build metamodule firmware on linux"
     runs-on: ubuntu-24.04
     steps:
       - name: Install Arm GNU Toolchain (arm-none-eabi-gcc)
