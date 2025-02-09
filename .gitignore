@@ -36,3 +36,4 @@ build
 
 .idea
 cmake-build-*
+metamodule/assets/*
