@@ -162,10 +162,15 @@ jobs:
           cmake --build build
           cd ${{ github.workspace }}/metamodule-plugins/
           if [ "${{ inputs.plugin }}" == "./" ]; then for f in *.mmplugin; do mv $f ${f%.mmplugin}-${{ env.CI_REF_NAME }}.mmplugin; done; else for f in *.mmplugin; do mv $f ${{ env.CI_REF_NAME }}.mmplugin; done; fi
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: "Release: ${{ env.CI_REF_NAME }}"
-          files: |
-            metamodule-plugins/*.mmplugin
+          path: ${{ github.workspace }}/metamodule-plugins/*.mmplugin
+          name: metamodule-linux-build
+#
+#      - name: Release
+#        uses: softprops/action-gh-release@v1
+#        with:
+#          name: "Release: ${{ env.CI_REF_NAME }}"
+#          files: |
+#            metamodule-plugins/*.mmplugin
