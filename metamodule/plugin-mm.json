@@ -1,0 +1,16 @@
+{
+  "MetaModulePluginMaintainer": "Wildergarden",
+  "MetaModulePluginMaintainerEmail": "",
+  "MetaModulePluginMaintainerUrl": "",
+  "MetaModuleDescription": "",
+  "MetaModuleIncludedModules": [
+    {
+      "slug": "Pascal",
+      "name": "Pascal"
+    },
+    {
+      "slug": "Dimit",
+      "name": "Dimit"
+    }
+  ]
+}
