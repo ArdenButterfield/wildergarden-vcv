@@ -5,6 +5,7 @@
 #include <cmath>
 #include <algorithm>
 #include "OscillatorBank.h"
+#include "FormantFetcher.h"
 
 #define MIDDLE_C 261.626
 
@@ -45,6 +46,7 @@ struct TheChatter : Module {
 	};
 
     OscillatorBank oscillatorBank;
+    FormantFetcher formantFetcher;
 
 	TheChatter() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -70,6 +72,11 @@ struct TheChatter : Module {
 	}
 
 	void process(const ProcessArgs& args) override {
+        float f1, f2;
+        auto startVowelParam = params[VOWEL_START_PARAM].getValue()
+                + 0.1 * params[VOWEL_START_MODULATION_PARAM].getValue() * inputs[VOWEL_START_CV_INPUT].getVoltage();
+        formantFetcher.fetchFirstVowel(startVowelParam, f1, f2);
+        oscillatorBank.setFormants(f1,f2, f1, f2);
         auto root = std::min(std::max(-5.f, params[ROOT_PARAM].getValue() + inputs[ROOT_MODULATION_INPUT].getVoltage()), 5.f);
         auto pitch = root + inputs[FREQUENCY_INPUT].getVoltage();
         oscillatorBank.setFrequency(MIDDLE_C * std::pow(2, pitch), args.sampleRate);

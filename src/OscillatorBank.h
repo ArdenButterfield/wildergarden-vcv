@@ -16,6 +16,8 @@ struct CyleOscillator {
     float frequency;
     float startingPhase;
     float magnitude;
+    float initialFormantGain;
+    float finalFormantGain;
 
     float tick() {
         float newX, newY;
@@ -33,6 +35,7 @@ public:
         reset();
         fs = 0;
         setFrequency(0, 44100);
+        formantCurvesNeedRecalculating = true;
     }
 
     ~OscillatorBank() { }
@@ -44,7 +47,18 @@ public:
             oscillators[i].x = oscillators[i].magnitude * cosf(oscillators[i].startingPhase);
             oscillators[i].y = oscillators[i].magnitude * sinf(oscillators[i].startingPhase);
         }
+    }
 
+    void setFormants(float f1_initial, float f2_initial, float f1_final, float f2_final) {
+        if (f1_initial == initialFormants[0] && f2_initial == initialFormants[1]
+            && f1_final == finalFormants[0] && f2_final == finalFormants[1]) {
+            return;
+        }
+        initialFormants[0] = f1_initial;
+        initialFormants[1] = f2_initial;
+        finalFormants[0] = f1_final;
+        finalFormants[1] = f2_final;
+        formantCurvesNeedRecalculating = true;
     }
 
     void setFrequency(float frequency, float sampleRate) {
@@ -64,25 +78,56 @@ public:
             oscillator.m11 = cosf(angleIncrement);
             overtone += 1;
         }
+        formantCurvesNeedRecalculating = true;
     }
 
     float tick() {
+        if (formantCurvesNeedRecalculating) {
+            recalculateFormantCurves();
+        }
+
         auto out = 0.f;
         for (auto& oscillator : oscillators) {
             auto oscVal = oscillator.tick();
             // std::cout << oscVal << "\n";
             if (oscillator.frequency < nyquist) {
-                out += oscVal;
+                out += oscVal * oscillator.initialFormantGain;
             }
         }
         return out;
     }
 
 private:
-    std::array<CyleOscillator, 256> oscillators;
+    void recalculateFormantCurves() {
+        const float scalingPerOctave = 0.1f; // TODO: get rid of log and exp using math
+
+        for (auto& oscillator : oscillators) {
+            auto f = oscillator.frequency;
+            oscillator.initialFormantGain = 0;
+            oscillator.finalFormantGain = 0;
+
+            for (auto formant : initialFormants) {
+                auto diff = std::abs(std::log2(f / formant));
+                oscillator.initialFormantGain += std::pow(scalingPerOctave, diff);
+            }
+            for (auto formant : finalFormants) {
+                auto diff = std::abs(std::log2(f / formant));
+                oscillator.finalFormantGain += std::pow(scalingPerOctave, diff);
+            }
+        }
+        formantCurvesNeedRecalculating = false;
+    }
+
+    static const int NUM_OSCILLATORS = 256;
+    std::array<CyleOscillator, NUM_OSCILLATORS> oscillators;
     float fs;
     float nyquist;
     const float twoPi = 2 * 3.141592653589793238;
+
+    bool formantCurvesNeedRecalculating;
+
+    std::array<float, 2> initialFormants;
+    std::array<float, 2> finalFormants;
 };
 
 
