@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include <algorithm>
-#include "Filter.h"
+#include "OscillatorBank.h"
 
 #define MIDDLE_C 261.626
 
@@ -44,8 +44,7 @@ struct TheChatter : Module {
 		LIGHTS_LEN
 	};
 
-    SawtoothOscillator sawtoothOscillator;
-    Filter filter;
+    OscillatorBank oscillatorBank;
 
 	TheChatter() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -71,15 +70,10 @@ struct TheChatter : Module {
 	}
 
 	void process(const ProcessArgs& args) override {
-        if (!filter.isInitialized()) {
-            filter.initialize(args.sampleRate);
-        }
-        filter.setParameters(500, 1, Filter::filter_lopass);
         auto root = std::min(std::max(-5.f, params[ROOT_PARAM].getValue() + inputs[ROOT_MODULATION_INPUT].getVoltage()), 5.f);
         auto pitch = root + inputs[FREQUENCY_INPUT].getVoltage();
-        sawtoothOscillator.setFrequency(MIDDLE_C * std::pow(2, pitch));
-        auto saw = sawtoothOscillator.process(args.sampleTime);
-        outputs[VOWEL_ONLY_OUTPUT].setVoltage(filter.process(saw));
+        oscillatorBank.setFrequency(MIDDLE_C * std::pow(2, pitch), args.sampleRate);
+        outputs[VOWEL_ONLY_OUTPUT].setVoltage(oscillatorBank.tick());
 	}
 };
 

@@ -1,0 +1,89 @@
+//
+// Created by arden on 2/13/25.
+//
+
+#ifndef WILDERGARDEN_VCV_OSCILLATORBANK_H
+#define WILDERGARDEN_VCV_OSCILLATORBANK_H
+
+#include <array>
+#include <cmath>
+#include <iostream>
+
+struct CyleOscillator {
+    float x;
+    float y;
+    float m00, m01, m10, m11;
+    float frequency;
+    float startingPhase;
+    float magnitude;
+
+    float tick() {
+        float newX, newY;
+        newX = x * m00 + y * m01;
+        newY = x * m10 + y * m11;
+        x = newX;
+        y = newY;
+        return y;
+    }
+};
+
+class OscillatorBank {
+public:
+    OscillatorBank() {
+        reset();
+        fs = 0;
+        setFrequency(0, 44100);
+    }
+
+    ~OscillatorBank() { }
+
+    void reset() {
+        for (int i = 0; i < oscillators.size(); ++i) {
+            oscillators[i].startingPhase = 0;
+            oscillators[i].magnitude = 1.f / static_cast<float>(i + 1);
+            oscillators[i].x = oscillators[i].magnitude * cosf(oscillators[i].startingPhase);
+            oscillators[i].y = oscillators[i].magnitude * sinf(oscillators[i].startingPhase);
+        }
+
+    }
+
+    void setFrequency(float frequency, float sampleRate) {
+        if (sampleRate == fs && frequency == oscillators[0].frequency) {
+            return;
+        }
+        fs = sampleRate;
+        nyquist = fs * 0.45;
+        float overtone = 1;
+        float freqScaler = twoPi / sampleRate;
+        for (auto& oscillator : oscillators) {
+            oscillator.frequency = overtone * frequency;
+            float angleIncrement = oscillator.frequency * freqScaler;
+            oscillator.m00 = cosf(angleIncrement);
+            oscillator.m01 = -sinf(angleIncrement);
+            oscillator.m10 = sinf(angleIncrement);
+            oscillator.m11 = cosf(angleIncrement);
+            overtone += 1;
+        }
+    }
+
+    float tick() {
+        auto out = 0.f;
+        for (auto& oscillator : oscillators) {
+            auto oscVal = oscillator.tick();
+            // std::cout << oscVal << "\n";
+            if (oscillator.frequency < nyquist) {
+                out += oscVal;
+            }
+        }
+        return out;
+    }
+
+private:
+    std::array<CyleOscillator, 256> oscillators;
+    float fs;
+    float nyquist;
+    const float twoPi = 2 * 3.141592653589793238;
+};
+
+
+#endif //WILDERGARDEN_VCV_OSCILLATORBANK_H
