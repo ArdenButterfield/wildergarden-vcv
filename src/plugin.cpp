@@ -8,6 +8,7 @@ void init(Plugin* p) {
 	pluginInstance = p;
     p->addModel(modelDimit);
     p->addModel(modelPascal);
+    p->addModel(modelTheChatter);
     // Add modules here
 	// p->addModel(modelMyModule);
 
