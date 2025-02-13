@@ -1,0 +1,5 @@
+CREDITS
+
+FourmsSliderHorizontal.svg and FourmsSliderHorizontalHandle.svg are from https://github.com/4ms/4ms-vcv, licensed under
+GPL-v3
+

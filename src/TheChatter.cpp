@@ -1,5 +1,5 @@
 #include "plugin.hpp"
-
+#include "WildergardensWidgets.h"
 
 struct TheChatter : Module {
 	enum ParamId {
@@ -39,12 +39,12 @@ struct TheChatter : Module {
 
 	TheChatter() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
-		configParam(PLOSIVE_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(PLOSIVE_MODULATION_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(VOWEL_START_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(VOWEL_START_MODULATION_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(VOWEL_END_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(VOWEL_END_MODULATION_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(PLOSIVE_PARAM, 0.f, 1.f, 0.f, "Plosive");
+		configParam(PLOSIVE_MODULATION_PARAM, 0.f, 1.f, 0.f, "Plosive modulation");
+		configParam(VOWEL_START_PARAM, 0.f, 1.f, 0.f, "Vowel start");
+		configParam(VOWEL_START_MODULATION_PARAM, 0.f, 1.f, 0.f, "Vowel start modulation");
+		configParam(VOWEL_END_PARAM, 0.f, 1.f, 0.f, "Vowel end");
+		configParam(VOWEL_END_MODULATION_PARAM, 0.f, 1.f, 0.f, "Vowel end modulation");
 		configParam(MODE_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(ROOT_PARAM, 0.f, 1.f, 0.f, "");
 		configInput(PLOSIVE_CV_INPUT, "");
@@ -58,6 +58,7 @@ struct TheChatter : Module {
 		configOutput(VOWEL_ONLY_OUTPUT, "");
 		configOutput(PLOSIVE_ONLY_OUTPUT, "");
 		configOutput(MIX_OUTPUT, "");
+
 	}
 
 	void process(const ProcessArgs& args) override {
@@ -75,12 +76,12 @@ struct TheChatterWidget : ModuleWidget {
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(25.28, 17.74)), module, TheChatter::PLOSIVE_PARAM));
-		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(45.313, 23.107)), module, TheChatter::PLOSIVE_MODULATION_PARAM));
-		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(25.43, 34.397)), module, TheChatter::VOWEL_START_PARAM));
-		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(45.313, 40.47)), module, TheChatter::VOWEL_START_MODULATION_PARAM));
-		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(25.4, 50.224)), module, TheChatter::VOWEL_END_PARAM));
-		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(45.313, 55.908)), module, TheChatter::VOWEL_END_MODULATION_PARAM));
+		addParam(createParamCentered<FourmsSliderHorizontal>(mm2px(Vec(25.28, 17.74)), module, TheChatter::PLOSIVE_PARAM));
+		addParam(createParamCentered<Trimpot>(mm2px(Vec(45.313, 23.107)), module, TheChatter::PLOSIVE_MODULATION_PARAM));
+		addParam(createParamCentered<FourmsSliderHorizontal>(mm2px(Vec(25.43, 34.397)), module, TheChatter::VOWEL_START_PARAM));
+		addParam(createParamCentered<Trimpot>(mm2px(Vec(45.313, 40.47)), module, TheChatter::VOWEL_START_MODULATION_PARAM));
+		addParam(createParamCentered<FourmsSliderHorizontal>(mm2px(Vec(25.4, 50.224)), module, TheChatter::VOWEL_END_PARAM));
+		addParam(createParamCentered<Trimpot>(mm2px(Vec(45.313, 55.908)), module, TheChatter::VOWEL_END_MODULATION_PARAM));
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(10.89, 87.157)), module, TheChatter::MODE_PARAM));
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(10.832, 113.324)), module, TheChatter::ROOT_PARAM));
 
