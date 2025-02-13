@@ -1,5 +1,12 @@
 #include "plugin.hpp"
 #include "WildergardensWidgets.h"
+#include "SawtoothOscillator.h"
+
+#include <cmath>
+#include <algorithm>
+#include "Filter.h"
+
+#define MIDDLE_C 261.626
 
 struct TheChatter : Module {
 	enum ParamId {
@@ -37,16 +44,19 @@ struct TheChatter : Module {
 		LIGHTS_LEN
 	};
 
+    SawtoothOscillator sawtoothOscillator;
+    Filter filter;
+
 	TheChatter() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 		configParam(PLOSIVE_PARAM, 0.f, 1.f, 0.f, "Plosive");
-		configParam(PLOSIVE_MODULATION_PARAM, 0.f, 1.f, 0.f, "Plosive modulation");
+		configParam(PLOSIVE_MODULATION_PARAM, -1.f, 1.f, 0.f, "Plosive modulation");
 		configParam(VOWEL_START_PARAM, 0.f, 1.f, 0.f, "Vowel start");
-		configParam(VOWEL_START_MODULATION_PARAM, 0.f, 1.f, 0.f, "Vowel start modulation");
+		configParam(VOWEL_START_MODULATION_PARAM, -1.f, 1.f, 0.f, "Vowel start modulation");
 		configParam(VOWEL_END_PARAM, 0.f, 1.f, 0.f, "Vowel end");
-		configParam(VOWEL_END_MODULATION_PARAM, 0.f, 1.f, 0.f, "Vowel end modulation");
-		configParam(MODE_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(ROOT_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(VOWEL_END_MODULATION_PARAM, -1.f, 1.f, 0.f, "Vowel end modulation");
+		configParam(MODE_PARAM, 0.f, 1.f, 0.f, "Speak/Sung mode");
+		configParam(ROOT_PARAM, -5.f, 5.f, 0.f, "Root (V/oct)");
 		configInput(PLOSIVE_CV_INPUT, "");
 		configInput(VOWEL_START_CV_INPUT, "");
 		configInput(VOWEL_END_CV_INPUT, "");
@@ -58,10 +68,18 @@ struct TheChatter : Module {
 		configOutput(VOWEL_ONLY_OUTPUT, "");
 		configOutput(PLOSIVE_ONLY_OUTPUT, "");
 		configOutput(MIX_OUTPUT, "");
-
 	}
 
 	void process(const ProcessArgs& args) override {
+        if (!filter.isInitialized()) {
+            filter.initialize(args.sampleRate);
+        }
+        filter.setParameters(500, 1, Filter::filter_lopass);
+        auto root = std::min(std::max(-5.f, params[ROOT_PARAM].getValue() + inputs[ROOT_MODULATION_INPUT].getVoltage()), 5.f);
+        auto pitch = root + inputs[FREQUENCY_INPUT].getVoltage();
+        sawtoothOscillator.setFrequency(MIDDLE_C * std::pow(2, pitch));
+        auto saw = sawtoothOscillator.process(args.sampleTime);
+        outputs[VOWEL_ONLY_OUTPUT].setVoltage(filter.process(saw));
 	}
 };
 
