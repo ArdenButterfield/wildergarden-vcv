@@ -41,6 +41,9 @@ public:
     ~OscillatorBank() { }
 
     void reset() {
+        morphStep = 1.f / (MORPH_TIME * fs);
+        morphCounter = 1.f;
+
         for (int i = 0; i < oscillators.size(); ++i) {
             oscillators[i].startingPhase = 0;
             oscillators[i].magnitude = 1.f / static_cast<float>(i + 1);
@@ -87,13 +90,16 @@ public:
         }
 
         auto out = 0.f;
+        auto volFirst = std::pow(morphCounter, 2);
+        auto volLast = 1 - volFirst;
         for (auto& oscillator : oscillators) {
             auto oscVal = oscillator.tick();
             // std::cout << oscVal << "\n";
             if (oscillator.frequency < nyquist) {
-                out += oscVal * oscillator.initialFormantGain;
+                out += oscVal * (volFirst * oscillator.initialFormantGain + volLast * oscillator.finalFormantGain);
             }
         }
+        morphCounter = std::max(0.f, morphCounter - morphStep);
         return out;
     }
 
@@ -123,6 +129,10 @@ private:
     float fs;
     float nyquist;
     const float twoPi = 2 * 3.141592653589793238;
+
+    const float MORPH_TIME = 1.5;
+    float morphStep;
+    float morphCounter;
 
     bool formantCurvesNeedRecalculating;
 

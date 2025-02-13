@@ -47,6 +47,7 @@ struct TheChatter : Module {
 
     OscillatorBank oscillatorBank;
     FormantFetcher formantFetcher;
+    dsp::SchmittTrigger noteOnTrigger;
 
 	TheChatter() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -72,11 +73,20 @@ struct TheChatter : Module {
 	}
 
 	void process(const ProcessArgs& args) override {
-        float f1, f2;
+        auto gate = inputs[GATE_INPUT].getVoltage();
+        if (noteOnTrigger.process(gate, 0.1f, 1.f)) {
+            oscillatorBank.reset();
+        }
+
+        float start_f1, start_f2, end_f1, end_f2;
         auto startVowelParam = params[VOWEL_START_PARAM].getValue()
                 + 0.1 * params[VOWEL_START_MODULATION_PARAM].getValue() * inputs[VOWEL_START_CV_INPUT].getVoltage();
-        formantFetcher.fetchFirstVowel(startVowelParam, f1, f2);
-        oscillatorBank.setFormants(f1,f2, f1, f2);
+        auto endVowelParam = params[VOWEL_END_PARAM].getValue()
+                + 0.1 * params[VOWEL_END_MODULATION_PARAM].getValue() * inputs[VOWEL_END_CV_INPUT].getVoltage();
+        formantFetcher.fetchFirstVowel(startVowelParam, start_f1, start_f2);
+        formantFetcher.fetchFirstVowel(endVowelParam, end_f1, end_f2);
+        oscillatorBank.setFormants(start_f1, start_f2, end_f1, end_f2);
+
         auto root = std::min(std::max(-5.f, params[ROOT_PARAM].getValue() + inputs[ROOT_MODULATION_INPUT].getVoltage()), 5.f);
         auto pitch = root + inputs[FREQUENCY_INPUT].getVoltage();
         oscillatorBank.setFrequency(MIDDLE_C * std::pow(2, pitch), args.sampleRate);
