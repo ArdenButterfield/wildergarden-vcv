@@ -6,6 +6,7 @@
 #include "OscillatorBank.h"
 #include "FormantFetcher.h"
 #include "EnvelopeHandler.h"
+#include "ExternalInputProcessor.h"
 
 struct TheChatter : Module {
 	enum ParamId {
@@ -46,6 +47,7 @@ struct TheChatter : Module {
     OscillatorBank oscillatorBank;
     FormantFetcher formantFetcher;
     EnvelopeHandler envelopeHandler;
+    ExternalInputProcessor externalInputProcessor;
 
 	TheChatter() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -70,7 +72,7 @@ struct TheChatter : Module {
 		configOutput(MIX_OUTPUT, "");
 	}
 
-    void setOscillatorBankFormants(const ProcessArgs& args, float root) {
+    void setOscillatorBankFormants(float root) {
         float start_f1, start_f2, end_f1, end_f2;
         auto startVowelParam = params[VOWEL_START_PARAM].getValue()
                                + 0.1 * params[VOWEL_START_MODULATION_PARAM].getValue() * inputs[VOWEL_START_CV_INPUT].getVoltage();
@@ -84,6 +86,11 @@ struct TheChatter : Module {
                                    start_f2 * formantScaling,
                                    end_f1 * formantScaling,
                                    end_f2 * formantScaling);
+
+        externalInputProcessor.setFormants(start_f1 * formantScaling,
+                                           start_f2 * formantScaling,
+                                           end_f1 * formantScaling,
+                                           end_f2 * formantScaling);
     }
 
 	void process(const ProcessArgs& args) override {
@@ -91,12 +98,17 @@ struct TheChatter : Module {
 
         auto gate = inputs[GATE_INPUT].getVoltage();
 
-        setOscillatorBankFormants(args, root);
+        setOscillatorBankFormants(root);
 
         EnvelopeHandler::EnvelopeSample sample;
         envelopeHandler.process(args.sampleRate, gate, root, inputs[FREQUENCY_INPUT].getVoltage(), sample);
         oscillatorBank.setFrequency(sample.frequency, args.sampleRate);
-        outputs[VOWEL_ONLY_OUTPUT].setVoltage(oscillatorBank.tick(sample.formantProgression) * sample.amp);
+        externalInputProcessor.setFrequency(sample.frequency, args.sampleRate);
+        if (inputs[EXTERNAL_INPUT].isConnected()) {
+            outputs[MIX_OUTPUT].setVoltage(externalInputProcessor.process(sample, inputs[EXTERNAL_INPUT].getVoltage()));
+        } else {
+            outputs[VOWEL_ONLY_OUTPUT].setVoltage(oscillatorBank.tick(sample.formantProgression) * sample.amp);
+        }
 	}
 };
 
