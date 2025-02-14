@@ -39,9 +39,6 @@ public:
     ~OscillatorBank() { }
 
     void reset() {
-        morphStep = 1.f / (MORPH_TIME * fs);
-        morphCounter = 1.f;
-
         for (int i = 0; i < oscillators.size(); ++i) {
             oscillators[i].startingPhase = 0;
             oscillators[i].magnitude = 1.f / static_cast<float>(i + 1);
@@ -80,8 +77,8 @@ public:
         }
     }
 
-    float tick() {
-        recalculateFormantCurves();
+    float tick(float formantProgression) {
+        recalculateFormantCurves(formantProgression);
 
         auto out = 0.f;
         for (auto& oscillator : oscillators) {
@@ -91,17 +88,16 @@ public:
                 out += oscVal * oscillator.formantGain;
             }
         }
-        morphCounter = std::max(0.f, morphCounter - morphStep);
         return out;
     }
 
 private:
-    void recalculateFormantCurves() {
+    void recalculateFormantCurves(float formantProgression) {
         const float scalingPerOctave = 0.1f; // TODO: get rid of log and exp using math
 
         std::array<float, 2> currentFormants;
-        auto volFirst = std::pow(morphCounter, 2);
-        auto volLast = 1 - volFirst;
+        auto volFirst = 1 - formantProgression;
+        auto volLast = formantProgression;
         for (int i = 0; i < 2; ++i) {
             currentFormants[i] = volFirst * initialFormants[i] + volLast * finalFormants[i];
         }
@@ -121,10 +117,6 @@ private:
     float fs;
     float nyquist;
     const float twoPi = 2 * 3.141592653589793238;
-
-    const float MORPH_TIME = 0.5;
-    float morphStep;
-    float morphCounter;
 
 
     std::array<float, 2> initialFormants;

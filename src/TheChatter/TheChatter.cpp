@@ -6,8 +6,7 @@
 #include <algorithm>
 #include "OscillatorBank.h"
 #include "FormantFetcher.h"
-
-#define MIDDLE_C 261.626
+#include "EnvelopeHandler.h"
 
 struct TheChatter : Module {
 	enum ParamId {
@@ -47,7 +46,7 @@ struct TheChatter : Module {
 
     OscillatorBank oscillatorBank;
     FormantFetcher formantFetcher;
-    dsp::SchmittTrigger noteOnTrigger;
+    EnvelopeHandler envelopeHandler;
 
 	TheChatter() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -74,9 +73,6 @@ struct TheChatter : Module {
 
 	void process(const ProcessArgs& args) override {
         auto gate = inputs[GATE_INPUT].getVoltage();
-        if (noteOnTrigger.process(gate, 0.1f, 1.f)) {
-            oscillatorBank.reset();
-        }
 
         float start_f1, start_f2, end_f1, end_f2;
         auto startVowelParam = params[VOWEL_START_PARAM].getValue()
@@ -92,9 +88,10 @@ struct TheChatter : Module {
                                    start_f2 * formantScaling,
                                    end_f1 * formantScaling,
                                    end_f2 * formantScaling);
-        auto pitch = root + inputs[FREQUENCY_INPUT].getVoltage();
-        oscillatorBank.setFrequency(MIDDLE_C * std::pow(2, pitch), args.sampleRate);
-        outputs[VOWEL_ONLY_OUTPUT].setVoltage(oscillatorBank.tick());
+        EnvelopeHandler::EnvelopeSample sample;
+        envelopeHandler.process(args.sampleRate, gate, root, inputs[FREQUENCY_INPUT].getVoltage(), sample);
+        oscillatorBank.setFrequency(sample.frequency, args.sampleRate);
+        outputs[VOWEL_ONLY_OUTPUT].setVoltage(oscillatorBank.tick(sample.formantProgression) * sample.amp);
 	}
 };
 
