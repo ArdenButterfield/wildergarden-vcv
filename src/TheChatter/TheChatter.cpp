@@ -1,5 +1,5 @@
 #include "plugin.hpp"
-#include "WildergardensWidgets.h"
+#include "../WildergardensWidgets.h"
 #include "SawtoothOscillator.h"
 
 #include <cmath>
