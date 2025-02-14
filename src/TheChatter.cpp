@@ -85,9 +85,13 @@ struct TheChatter : Module {
                 + 0.1 * params[VOWEL_END_MODULATION_PARAM].getValue() * inputs[VOWEL_END_CV_INPUT].getVoltage();
         formantFetcher.fetchFirstVowel(startVowelParam, start_f1, start_f2);
         formantFetcher.fetchFirstVowel(endVowelParam, end_f1, end_f2);
-        oscillatorBank.setFormants(start_f1, start_f2, end_f1, end_f2);
-
         auto root = std::min(std::max(-5.f, params[ROOT_PARAM].getValue() + inputs[ROOT_MODULATION_INPUT].getVoltage()), 5.f);
+        auto formantScaling = std::pow(2.f, root * 0.3f);
+
+        oscillatorBank.setFormants(start_f1 * formantScaling,
+                                   start_f2 * formantScaling,
+                                   end_f1 * formantScaling,
+                                   end_f2 * formantScaling);
         auto pitch = root + inputs[FREQUENCY_INPUT].getVoltage();
         oscillatorBank.setFrequency(MIDDLE_C * std::pow(2, pitch), args.sampleRate);
         outputs[VOWEL_ONLY_OUTPUT].setVoltage(oscillatorBank.tick());
