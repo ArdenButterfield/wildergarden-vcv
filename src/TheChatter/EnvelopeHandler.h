@@ -39,7 +39,6 @@ private:
     const float formantMorphTime = 0.5;
     float formantMorphStep;
     float formantMorphCounter;
-
 };
 
 

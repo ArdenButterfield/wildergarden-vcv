@@ -1,6 +1,5 @@
 #include "plugin.hpp"
 #include "../WildergardensWidgets.h"
-#include "SawtoothOscillator.h"
 
 #include <cmath>
 #include <algorithm>
@@ -71,23 +70,29 @@ struct TheChatter : Module {
 		configOutput(MIX_OUTPUT, "");
 	}
 
-	void process(const ProcessArgs& args) override {
-        auto gate = inputs[GATE_INPUT].getVoltage();
-
+    void setOscillatorBankFormants(const ProcessArgs& args, float root) {
         float start_f1, start_f2, end_f1, end_f2;
         auto startVowelParam = params[VOWEL_START_PARAM].getValue()
-                + 0.1 * params[VOWEL_START_MODULATION_PARAM].getValue() * inputs[VOWEL_START_CV_INPUT].getVoltage();
+                               + 0.1 * params[VOWEL_START_MODULATION_PARAM].getValue() * inputs[VOWEL_START_CV_INPUT].getVoltage();
         auto endVowelParam = params[VOWEL_END_PARAM].getValue()
-                + 0.1 * params[VOWEL_END_MODULATION_PARAM].getValue() * inputs[VOWEL_END_CV_INPUT].getVoltage();
+                             + 0.1 * params[VOWEL_END_MODULATION_PARAM].getValue() * inputs[VOWEL_END_CV_INPUT].getVoltage();
         formantFetcher.fetchFirstVowel(startVowelParam, start_f1, start_f2);
         formantFetcher.fetchFirstVowel(endVowelParam, end_f1, end_f2);
-        auto root = std::min(std::max(-5.f, params[ROOT_PARAM].getValue() + inputs[ROOT_MODULATION_INPUT].getVoltage()), 5.f);
         auto formantScaling = std::pow(2.f, root * 0.3f);
 
         oscillatorBank.setFormants(start_f1 * formantScaling,
                                    start_f2 * formantScaling,
                                    end_f1 * formantScaling,
                                    end_f2 * formantScaling);
+    }
+
+	void process(const ProcessArgs& args) override {
+        auto root = std::min(std::max(-5.f, params[ROOT_PARAM].getValue() + inputs[ROOT_MODULATION_INPUT].getVoltage()), 5.f);
+
+        auto gate = inputs[GATE_INPUT].getVoltage();
+
+        setOscillatorBankFormants(args, root);
+
         EnvelopeHandler::EnvelopeSample sample;
         envelopeHandler.process(args.sampleRate, gate, root, inputs[FREQUENCY_INPUT].getVoltage(), sample);
         oscillatorBank.setFrequency(sample.frequency, args.sampleRate);
