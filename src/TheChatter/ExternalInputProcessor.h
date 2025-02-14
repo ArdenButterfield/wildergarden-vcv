@@ -6,6 +6,7 @@
 #define WILDERGARDEN_VCV_EXTERNALINPUTPROCESSOR_H
 
 #include "EnvelopeHandler.h"
+#include <array>
 
 class ExternalInputProcessor {
 public:
