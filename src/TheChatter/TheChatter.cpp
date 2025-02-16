@@ -4,7 +4,6 @@
 #include <cmath>
 #include <algorithm>
 #include "OscillatorBank.h"
-#include "FormantFetcher.h"
 #include "EnvelopeHandler.h"
 #include "ExternalInputProcessor.h"
 
@@ -45,7 +44,6 @@ struct TheChatter : Module {
 	};
 
     OscillatorBank oscillatorBank;
-    FormantFetcher formantFetcher;
     EnvelopeHandler envelopeHandler;
     ExternalInputProcessor externalInputProcessor;
 
@@ -72,42 +70,26 @@ struct TheChatter : Module {
 		configOutput(MIX_OUTPUT, "");
 	}
 
-    void setOscillatorBankFormants(float root) {
-        float start_f1, start_f2, end_f1, end_f2;
-        auto startVowelParam = params[VOWEL_START_PARAM].getValue()
-                               + 0.1 * params[VOWEL_START_MODULATION_PARAM].getValue() * inputs[VOWEL_START_CV_INPUT].getVoltage();
-        auto endVowelParam = params[VOWEL_END_PARAM].getValue()
-                             + 0.1 * params[VOWEL_END_MODULATION_PARAM].getValue() * inputs[VOWEL_END_CV_INPUT].getVoltage();
-        formantFetcher.fetchFirstVowel(startVowelParam, start_f1, start_f2);
-        formantFetcher.fetchFirstVowel(endVowelParam, end_f1, end_f2);
-        auto formantScaling = std::pow(2.f, root * 0.3f);
-
-        oscillatorBank.setFormants(start_f1 * formantScaling,
-                                   start_f2 * formantScaling,
-                                   end_f1 * formantScaling,
-                                   end_f2 * formantScaling);
-
-        externalInputProcessor.setFormants(start_f1 * formantScaling,
-                                           start_f2 * formantScaling,
-                                           end_f1 * formantScaling,
-                                           end_f2 * formantScaling);
-    }
-
 	void process(const ProcessArgs& args) override {
         auto root = std::min(std::max(-5.f, params[ROOT_PARAM].getValue() + inputs[ROOT_MODULATION_INPUT].getVoltage()), 5.f);
 
         auto gate = inputs[GATE_INPUT].getVoltage();
 
-        setOscillatorBankFormants(root);
+        auto startVowelParam = params[VOWEL_START_PARAM].getValue()
+                + 0.1 * params[VOWEL_START_MODULATION_PARAM].getValue() * inputs[VOWEL_START_CV_INPUT].getVoltage();
+        auto endVowelParam = params[VOWEL_END_PARAM].getValue()
+                + 0.1 * params[VOWEL_END_MODULATION_PARAM].getValue() * inputs[VOWEL_END_CV_INPUT].getVoltage();
+        auto plosiveParam = params[PLOSIVE_PARAM].getValue()
+                + 0.1 * params[PLOSIVE_MODULATION_PARAM].getValue() * inputs[PLOSIVE_CV_INPUT].getVoltage();
 
         EnvelopeHandler::EnvelopeSample sample;
-        envelopeHandler.process(args.sampleRate, gate, root, inputs[FREQUENCY_INPUT].getVoltage(), sample);
-        oscillatorBank.setFrequency(sample.frequency, args.sampleRate);
-        externalInputProcessor.setFrequency(sample.frequency, args.sampleRate);
+        envelopeHandler.process(args.sampleRate,
+                                plosiveParam, startVowelParam, endVowelParam,
+                                gate, root, inputs[FREQUENCY_INPUT].getVoltage(), sample);
         if (inputs[EXTERNAL_INPUT].isConnected()) {
-            outputs[MIX_OUTPUT].setVoltage(externalInputProcessor.process(sample, inputs[EXTERNAL_INPUT].getVoltage()));
+            outputs[MIX_OUTPUT].setVoltage(externalInputProcessor.process(sample, args.sampleRate, inputs[EXTERNAL_INPUT].getVoltage()));
         } else {
-            outputs[VOWEL_ONLY_OUTPUT].setVoltage(oscillatorBank.tick(sample.formantProgression) * sample.amp);
+            outputs[VOWEL_ONLY_OUTPUT].setVoltage(oscillatorBank.process(sample, args.sampleRate));
         }
 	}
 };

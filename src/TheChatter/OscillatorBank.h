@@ -8,6 +8,7 @@
 #include <array>
 #include <cmath>
 #include <iostream>
+#include "EnvelopeHandler.h"
 
 struct CyleOscillator {
     float x;
@@ -39,7 +40,7 @@ public:
     ~OscillatorBank() { }
 
     void reset() {
-        for (int i = 0; i < oscillators.size(); ++i) {
+        for (unsigned i = 0; i < oscillators.size(); ++i) {
             oscillators[i].startingPhase = 0;
             oscillators[i].magnitude = 1.f / static_cast<float>(i + 1);
             oscillators[i].x = oscillators[i].magnitude * cosf(oscillators[i].startingPhase);
@@ -47,17 +48,22 @@ public:
         }
     }
 
-    void setFormants(float f1_initial, float f2_initial, float f1_final, float f2_final) {
-        if (f1_initial == initialFormants[0] && f2_initial == initialFormants[1]
-            && f1_final == finalFormants[0] && f2_final == finalFormants[1]) {
-            return;
+    float process(EnvelopeHandler::EnvelopeSample envelopeSample, float sampleRate) {
+        setFrequency(envelopeSample.frequency, sampleRate);
+        recalculateFormantCurves(envelopeSample.formants);
+
+        auto out = 0.f;
+        for (auto& oscillator : oscillators) {
+            auto oscVal = oscillator.tick();
+            // std::cout << oscVal << "\n";
+            if (oscillator.frequency < nyquist) {
+                out += oscVal * oscillator.formantGain;
+            }
         }
-        initialFormants[0] = f1_initial;
-        initialFormants[1] = f2_initial;
-        finalFormants[0] = f1_final;
-        finalFormants[1] = f2_final;
+        return out * envelopeSample.amp;
     }
 
+private:
     void setFrequency(float frequency, float sampleRate) {
         if (sampleRate == fs && frequency == oscillators[0].frequency) {
             return;
@@ -77,30 +83,9 @@ public:
         }
     }
 
-    float tick(float formantProgression) {
-        recalculateFormantCurves(formantProgression);
-
-        auto out = 0.f;
-        for (auto& oscillator : oscillators) {
-            auto oscVal = oscillator.tick();
-            // std::cout << oscVal << "\n";
-            if (oscillator.frequency < nyquist) {
-                out += oscVal * oscillator.formantGain;
-            }
-        }
-        return out;
-    }
-
-private:
-    void recalculateFormantCurves(float formantProgression) {
+    void recalculateFormantCurves(std::array<float, 2>& currentFormants) {
         const float scalingPerOctave = 0.1f; // TODO: get rid of log and exp using math
 
-        std::array<float, 2> currentFormants;
-        auto volFirst = 1 - formantProgression;
-        auto volLast = formantProgression;
-        for (int i = 0; i < 2; ++i) {
-            currentFormants[i] = volFirst * initialFormants[i] + volLast * finalFormants[i];
-        }
         for (auto& oscillator : oscillators) {
             auto f = oscillator.frequency;
             oscillator.formantGain = 0;
@@ -118,9 +103,6 @@ private:
     float nyquist;
     const float twoPi = 2 * 3.141592653589793238;
 
-
-    std::array<float, 2> initialFormants;
-    std::array<float, 2> finalFormants;
 };
 
 

@@ -5,6 +5,7 @@
 #ifndef WILDERGARDEN_VCV_FORMANTFETCHER_H
 #define WILDERGARDEN_VCV_FORMANTFETCHER_H
 
+#include <array>
 #include <vector>
 #include <cmath>
 #include <iostream>
@@ -16,7 +17,7 @@ struct FormantInfo {
 
 class FormantFetcher {
 public:
-    void fetchFirstVowel(float position, float& formant1, float& formant2) {
+    void fetchStartVowel(float position, std::array<float, 2>& startFormants) {
         position = std::min(std::max(0.f, position), 1.f);
         float scaledPositon = position * (formantInfo.size() - 1.f);
         int indexLow = std::floor(scaledPositon);
@@ -24,8 +25,13 @@ public:
         float amountHigh = std::fmod(scaledPositon, 1.f);
         float amountLow = 1 - amountHigh;
 
-        formant1 = formantInfo[indexLow].f1 * amountLow + formantInfo[indexHigh].f1 * amountHigh;
-        formant2 = formantInfo[indexLow].f2 * amountLow + formantInfo[indexHigh].f2 * amountHigh;
+        startFormants[0] = formantInfo[indexLow].f1 * amountLow + formantInfo[indexHigh].f1 * amountHigh;
+        startFormants[1] = formantInfo[indexLow].f2 * amountLow + formantInfo[indexHigh].f2 * amountHigh;
+    }
+
+    void fetchEndVowel(float position, std::array<float, 2>& endFormants) {
+        fetchStartVowel(position, endFormants); // This will be different if we have sounds that are only accessible
+        // on one or the other
     }
 
 private:
