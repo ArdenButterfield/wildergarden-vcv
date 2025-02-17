@@ -6,6 +6,8 @@
 #include "OscillatorBank.h"
 #include "EnvelopeHandler.h"
 #include "ExternalInputProcessor.h"
+#include "PlosiveGenerator.h"
+
 
 struct TheChatter : Module {
 	enum ParamId {
@@ -46,6 +48,7 @@ struct TheChatter : Module {
     OscillatorBank oscillatorBank;
     EnvelopeHandler envelopeHandler;
     ExternalInputProcessor externalInputProcessor;
+    PlosiveGenerator plosiveGenerator;
 
 	TheChatter() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -89,7 +92,11 @@ struct TheChatter : Module {
         if (inputs[EXTERNAL_INPUT].isConnected()) {
             outputs[MIX_OUTPUT].setVoltage(externalInputProcessor.process(sample, args.sampleRate, inputs[EXTERNAL_INPUT].getVoltage()));
         } else {
-            outputs[VOWEL_ONLY_OUTPUT].setVoltage(oscillatorBank.process(sample, args.sampleRate));
+            auto plosive = plosiveGenerator.process(sample, args.sampleRate);
+            auto vowel = oscillatorBank.process(sample, args.sampleRate);
+            outputs[VOWEL_ONLY_OUTPUT].setVoltage(vowel);
+            outputs[PLOSIVE_ONLY_OUTPUT].setVoltage(plosive);
+            outputs[MIX_OUTPUT].setVoltage(vowel + plosive);
         }
 	}
 };

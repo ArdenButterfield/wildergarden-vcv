@@ -22,7 +22,7 @@ public:
 
         }
 
-        return (formantFilters[0].process(input) + formantFilters[1].process(input)) * envelopeSample.amp;
+        return (formantFilters[0].process(input) + formantFilters[1].process(input)) * envelopeSample.vowelAmp;
     }
 
     float sampleRate;

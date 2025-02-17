@@ -15,6 +15,15 @@ struct FormantInfo {
     float f2;
 };
 
+struct PlosiveInfo {
+    float length;
+    float vowelDelayLength;
+    float gain;
+    float loFreq;
+    float hiFreq;
+    bool voiced;
+};
+
 class FormantFetcher {
 public:
     void fetchStartVowel(float position, std::array<float, 2>& startFormants) {
@@ -34,7 +43,20 @@ public:
         // on one or the other
     }
 
+    void fetchPlosive(float position, struct PlosiveInfo& plosive) {
+        auto positionIndex = static_cast<int>(position * plosiveInfo.size());
+        int upperBound = plosiveInfo.size() - 1;
+        plosive = plosiveInfo[std::min(std::max(0, positionIndex), upperBound)];
+    }
+
 private:
+    std::vector<PlosiveInfo> plosiveInfo {
+            {0.06, 0.10, 10.0, 30, 70, false}, // p
+            {0.02, 0.08, 1.0, 1100, 2000, false}, // k
+            {0.04, 0.08, 0.8, 1100, 5500, false}, // ch
+            {0.11, 0.12, 0.5, 7500, 10000, false}, // s
+    };
+
     // obviously not all the vowels, but a selection of vowels that will morph smoothly
     const std::vector<FormantInfo> formantInfo {
         {240, 2400}, // i

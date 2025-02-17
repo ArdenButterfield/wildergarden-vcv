@@ -60,7 +60,7 @@ public:
                 out += oscVal * oscillator.formantGain;
             }
         }
-        return out * envelopeSample.amp;
+        return out * envelopeSample.vowelAmp;
     }
 
 private:
