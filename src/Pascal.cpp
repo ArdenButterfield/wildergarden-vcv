@@ -65,6 +65,7 @@ struct Pascal : Module {
     dsp::SchmittTrigger freezeTrigger;
     dsp::BooleanTrigger clockGoingHighTrigger;
     dsp::BooleanTrigger clockGoingLowTrigger;
+    dsp::SchmittTrigger resetTrigger;
 
     std::array<int, 3> divisions;
     std::array<float, 3> pitch;
@@ -165,8 +166,9 @@ struct Pascal : Module {
                         || params[FREEZE_PARAM].getValue() > 0.5f;
 
         lights[FREEZE_INDICATOR_LIGHT].setBrightnessSmooth(isFrozen ? 1.f : 0.f, args.sampleTime);
-
+        bool reset = resetTrigger.process(inputs[RESET_INPUT].getVoltage(), 0.1, 1.f);
         clockTrigger.process(inputs[CLOCK_CV_INPUT].getVoltage(), 0.1f, 1.f);
+
         bool clockState =
                 clockTrigger.isHigh() ||
                 (params[CLOCK_PARAM].getValue() > 0.5f);
@@ -204,6 +206,29 @@ struct Pascal : Module {
             }
         }
 
+        if (reset) {
+            auto resetMode = params[RESET_MODE_PARAM].getValue();
+            if (resetMode < 0.5) {
+                // clear
+                for (auto& col : state) {
+                    for (auto& i : col) {
+                        i = 0;
+                    }
+                }
+            } else if (resetMode < 1.5) {
+                // advance
+                state[(column + 1) % 4][0] = state[column][0];
+                for (int i = step + 1; i < 32; ++i) {
+                    state[column][i] = 0;
+                }
+                column++;
+                column %= 4;
+            } else {
+                // go back (nothing to do)
+            }
+            step = 0;
+
+        }
 
         auto insertVolt = inputs[INSERT_CV_INPUT].getVoltage();
         if (insertTrigger.process(insertVolt, 0.1f, 1.f) || params[INSERT_PARAM].getValue() > 0.5f) {
@@ -229,6 +254,10 @@ struct Pascal : Module {
                 lights[STATE_LIGHT + i * 3 + 0].setBrightnessSmooth(1.f, args.sampleTime);
                 lights[STATE_LIGHT + i * 3 + 1].setBrightnessSmooth(1.f, args.sampleTime);
                 lights[STATE_LIGHT + i * 3 + 2].setBrightnessSmooth(1.f, args.sampleTime);
+            } else if (i % 32 == length) {
+                lights[STATE_LIGHT + i * 3 + 0].setBrightnessSmooth(0.1f, args.sampleTime);
+                lights[STATE_LIGHT + i * 3 + 1].setBrightnessSmooth(0.1f, args.sampleTime);
+                lights[STATE_LIGHT + i * 3 + 2].setBrightnessSmooth(0.1f, args.sampleTime);
             } else {
                 float r, g, b;
                 getColor(state[i / 32][i % 32], r, g, b);
