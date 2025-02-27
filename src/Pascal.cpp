@@ -6,6 +6,7 @@ struct Pascal : Module {
 		CLOCK_PARAM,
 		INSERT_PARAM,
 		FREEZE_PARAM,
+        RESET_MODE_PARAM,
 		LENGTH_PARAM,
 		COUNTER1_DIVISIONS_PARAM,
 		COUNTER3_DIVISIONS_PARAM,
@@ -16,6 +17,7 @@ struct Pascal : Module {
 		CLOCK_CV_INPUT,
 		INSERT_CV_INPUT,
 		FREEZE_CV_INPUT,
+        RESET_INPUT,
 		LENGTH_CV_INPUT,
 		COUNTER3_DIVISIONS_CV_INPUT,
 		COUNTER1_DIVISIONS_CV_INPUT,
@@ -94,6 +96,7 @@ struct Pascal : Module {
 		configParam(CLOCK_PARAM, 0.f, 1.f, 0.f, "Clock");
 		configParam(INSERT_PARAM, 0.f, 1.f, 0.f, "Insert");
 		configParam(FREEZE_PARAM, 0.f, 1.f, 0.f, "Freeze");
+        configParam(RESET_MODE_PARAM, 0.f, 2.f, 0.f, "Reset mode");
 		configParam(LENGTH_PARAM, 1.f, 32.f, 16.f, "Length");
 		configParam(COUNTER1_DIVISIONS_PARAM, 1.f, 32.f, 4.f, "Divisions 1");
 		configParam(COUNTER3_DIVISIONS_PARAM, 1.f, 32.f, 4.f, "Divisions 3");
@@ -101,6 +104,7 @@ struct Pascal : Module {
 		configInput(CLOCK_CV_INPUT, "Clock input");
 		configInput(INSERT_CV_INPUT, "Insert input");
 		configInput(FREEZE_CV_INPUT, "Freeze Input");
+        configInput(RESET_INPUT, "Reset input");
 		configInput(LENGTH_CV_INPUT, "Length input");
 		configInput(COUNTER3_DIVISIONS_CV_INPUT, "Divisions 3 input");
 		configInput(COUNTER1_DIVISIONS_CV_INPUT, "Divisions 1 input");
@@ -285,18 +289,33 @@ struct PascalWidget : ModuleWidget {
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParamCentered<VCVButton>(mm2px(Vec(13.831, 20.423)), module, Pascal::CLOCK_PARAM));
-		addParam(createParamCentered<VCVButton>(mm2px(Vec(36.282, 20.457)), module, Pascal::INSERT_PARAM));
-		addParam(createParamCentered<CKSS>(mm2px(Vec(58.68, 20.457)), module, Pascal::FREEZE_PARAM));
-		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(84.348, 20.457)), module, Pascal::LENGTH_PARAM));
+        const float TOP_ROW_Y = 13.455;
+        const float ITEM_HEIGHT = 28.316;
+        const float ITEM_WIDTH = 17;
+        const float CLOCK_X = 4.628;
+        const float INSERT_X = 22.657;
+        const float FREEZE_X = 40.642;
+        const float RESET_X = 58.605;
+        const float RESET_WIDTH = 15.716;
+        const float LENGTH_X = 75.399;
+        const float LENGTH_WIDTH = 21.464;
+        const float PARAM_OFFSET = 20.4 - TOP_ROW_Y;
+        const float INPUT_OFFSET = 34.022 - TOP_ROW_Y;
+
+		addParam(createParamCentered<VCVButton>(mm2px(Vec(CLOCK_X + ITEM_WIDTH * 0.5, TOP_ROW_Y + PARAM_OFFSET)), module, Pascal::CLOCK_PARAM));
+		addParam(createParamCentered<VCVButton>(mm2px(Vec(INSERT_X + ITEM_WIDTH * 0.5, TOP_ROW_Y + PARAM_OFFSET)), module, Pascal::INSERT_PARAM));
+		addParam(createParamCentered<CKSS>(mm2px(Vec(FREEZE_X + ITEM_WIDTH * 0.5, TOP_ROW_Y + PARAM_OFFSET)), module, Pascal::FREEZE_PARAM));
+        addParam(createParamCentered<CKSSThree>(mm2px(Vec(RESET_X + RESET_WIDTH * 0.55, TOP_ROW_Y + PARAM_OFFSET)), module, Pascal::RESET_MODE_PARAM));
+		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(LENGTH_X + LENGTH_WIDTH * 0.5, TOP_ROW_Y + PARAM_OFFSET)), module, Pascal::LENGTH_PARAM));
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(15.131, 49.774)), module, Pascal::COUNTER1_DIVISIONS_PARAM));
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(70.314, 54.858)), module, Pascal::COUNTER3_DIVISIONS_PARAM));
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(15.17, 88.851)), module, Pascal::COUNTER2_DIVISIONS_PARAM));
 
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(13.825, 33.022)), module, Pascal::CLOCK_CV_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(36.231, 33.022)), module, Pascal::INSERT_CV_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(58.682, 33.022)), module, Pascal::FREEZE_CV_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(84.348, 33.026)), module, Pascal::LENGTH_CV_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(CLOCK_X + ITEM_WIDTH * 0.5, TOP_ROW_Y + INPUT_OFFSET)), module, Pascal::CLOCK_CV_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(INSERT_X + ITEM_WIDTH * 0.5, TOP_ROW_Y + INPUT_OFFSET)), module, Pascal::INSERT_CV_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(FREEZE_X + ITEM_WIDTH * 0.5, TOP_ROW_Y + INPUT_OFFSET)), module, Pascal::FREEZE_CV_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(RESET_X + ITEM_WIDTH * 0.5, TOP_ROW_Y + INPUT_OFFSET)), module, Pascal::RESET_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(LENGTH_X + LENGTH_WIDTH * 0.5, TOP_ROW_Y + INPUT_OFFSET)), module, Pascal::LENGTH_CV_INPUT));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(87.608, 54.858)), module, Pascal::COUNTER3_DIVISIONS_CV_INPUT));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(15.067, 66.01)), module, Pascal::COUNTER1_DIVISIONS_CV_INPUT));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(15.107, 105.088)), module, Pascal::COUNTER2_DIVISIONS_CV_INPUT));
@@ -314,9 +333,10 @@ struct PascalWidget : ModuleWidget {
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(90.575, 107.173)), module, Pascal::COUNTER3_TRIG6_OUTPUT));
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(32.334, 111.171)), module, Pascal::COUNTER2_PITCH_OUTPUT));
 
-		addChild(createLightCentered<MediumLight<YellowLight>>(mm2px(Vec(20.033, 38.778)), module, Pascal::CLOCK_INDICATOR_LIGHT));
-		addChild(createLightCentered<MediumLight<YellowLight>>(mm2px(Vec(42.45, 38.797)), module, Pascal::INSERT_INDICATOR_LIGHT));
-		addChild(createLightCentered<MediumLight<YellowLight>>(mm2px(Vec(64.856, 38.797)), module, Pascal::FREEZE_INDICATOR_LIGHT));
+        const float LIGHT_OFFSET = 2.5;
+		addChild(createLightCentered<MediumLight<YellowLight>>(mm2px(Vec(CLOCK_X + ITEM_WIDTH - LIGHT_OFFSET, TOP_ROW_Y + ITEM_HEIGHT - LIGHT_OFFSET)), module, Pascal::CLOCK_INDICATOR_LIGHT));
+		addChild(createLightCentered<MediumLight<YellowLight>>(mm2px(Vec(INSERT_X + ITEM_WIDTH - LIGHT_OFFSET, TOP_ROW_Y + ITEM_HEIGHT - LIGHT_OFFSET)), module, Pascal::INSERT_INDICATOR_LIGHT));
+		addChild(createLightCentered<MediumLight<YellowLight>>(mm2px(Vec(FREEZE_X + ITEM_WIDTH - LIGHT_OFFSET, TOP_ROW_Y + ITEM_HEIGHT - LIGHT_OFFSET)), module, Pascal::FREEZE_INDICATOR_LIGHT));
 		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(32.579, 60.888)), module, Pascal::COUNTER1_INDICATOR_LIGHT));
 		addChild(createLightCentered<MediumLight<BlueLight>>(mm2px(Vec(80.085, 72.995)), module, Pascal::COUNTER3_INDICATOR_LIGHT));
 		addChild(createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(32.618, 99.965)), module, Pascal::COUNTER2_INDICATOR_LIGHT));
@@ -329,7 +349,7 @@ struct PascalWidget : ModuleWidget {
 
 		// mm2px(Vec(24.665, 4.142))
 		// addChild(createWidget<Widget>(mm2px(Vec(72.015, 37.498))));
-        addBinaryCounter(module, Pascal::LENGTH_BINARY_COUNTER_LIGHT, 72.015 + 24.665 * 0.5, 37.498 + 4.142 * 0.5);
+        addBinaryCounter(module, Pascal::LENGTH_BINARY_COUNTER_LIGHT, LENGTH_X + LENGTH_WIDTH * 0.5, 37.498 + 4.142 * 0.5);
 
         // mm2px(Vec(35.367, 7.613))
 		// addChild(createWidget<Widget>(mm2px(Vec(61.591, 59.585))));
