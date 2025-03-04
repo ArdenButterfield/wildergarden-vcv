@@ -100,33 +100,6 @@ struct Pascal : Module {
             }
         }
 
-        for (auto& p : pitch) {
-            p = 0;
-        }
-    }
-
-    void setBinaryIndicatorLight(int light, int val, float sampleTime) {
-        for (int i = 0; i < 5; ++i) {
-            lights[light + 4 - i].setBrightnessSmooth((val & (1 << i)) ? 1.f : 0.f, sampleTime);
-        }
-    }
-
-    void getColor(int val, float& r, float& g, float& b) {
-        if (val == 0) {
-            r = 0; g = 0; b = 0;
-        } else {
-            r = val % divisions[0] ? 1.0 : 0.0;
-            g = val % divisions[1] ? 1.0 : 0.0;
-            b = val % divisions[2] ? 1.0 : 0.0;
-
-            auto totalBrightness = r + g + b;
-
-            if (totalBrightness > 0) {
-                r /= totalBrightness;
-                g /= totalBrightness;
-                b /= totalBrightness;
-            }
-        }
     }
 
 	void process(const ProcessArgs& args) override {
@@ -232,16 +205,6 @@ struct PascalWidget : ModuleWidget {
             auto y = stateY + lightAreaMargin + row * yStep;
             auto lightIndex = Pascal::STATE_LIGHT + i * 3;
             addChild(createLightCentered<SmallLight<RedGreenBlueLight>>(mm2px(Vec(x, y)), module, lightIndex));
-        }
-    }
-
-    void addBinaryCounter(Pascal* module, int enumIndex, double centerX, double centerY) {
-        const auto step = 3.1;
-        const auto numSteps = 5;
-        const auto offset = centerX - 0.5 * (numSteps - 1) * step;
-        for (int i = 0; i < numSteps; ++i) {
-            auto x = step * i + offset;
-            addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(x, centerY)), module, enumIndex + i));
         }
     }
 };
