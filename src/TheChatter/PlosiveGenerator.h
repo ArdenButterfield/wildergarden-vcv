@@ -6,6 +6,7 @@
 #define WILDERGARDEN_VCV_PLOSIVEGENERATOR_H
 
 #include <random>
+#include <ctime>
 #include "EnvelopeHandler.h"
 
 // Basically noise -> vca -> resonant lo and hi pass filters
