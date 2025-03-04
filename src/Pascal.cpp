@@ -59,32 +59,9 @@ struct Pascal : Module {
 	};
 
     dsp::SchmittTrigger clockTrigger;
-    dsp::SchmittTrigger insertTrigger;
-    dsp::SchmittTrigger freezeTrigger;
     dsp::BooleanTrigger clockGoingHighTrigger;
     dsp::BooleanTrigger clockGoingLowTrigger;
 
-    std::array<int, 3> divisions;
-    std::array<float, 3> pitch;
-    std::array<int, 3> divisionsParams = {
-            COUNTER1_DIVISIONS_PARAM,
-            COUNTER2_DIVISIONS_PARAM,
-            COUNTER3_DIVISIONS_PARAM
-    };
-
-    std::array<int, 3> divisionInputs = {
-            COUNTER1_DIVISIONS_CV_INPUT,
-            COUNTER2_DIVISIONS_CV_INPUT,
-            COUNTER3_DIVISIONS_CV_INPUT
-    };
-
-    std::array<int, 3> divisionIndicators = {
-            DIVISIONS1_BINARY_COUNTER_LIGHT,
-            DIVISIONS2_BINARY_COUNTER_LIGHT,
-            DIVISIONS3_BINARY_COUNTER_LIGHT
-    };
-
-    std::array<std::array<int, 32>, 4> state;
     int column;
     int step;
 
@@ -157,10 +134,7 @@ struct Pascal : Module {
     }
 
 	void process(const ProcessArgs& args) override {
-        bool isFrozen = inputs[FREEZE_CV_INPUT].getVoltage() > 1.0f
-                        || params[FREEZE_PARAM].getValue() > 0.5f;
 
-        lights[FREEZE_INDICATOR_LIGHT].setBrightnessSmooth(isFrozen ? 1.f : 0.f, args.sampleTime);
 
         clockTrigger.process(inputs[CLOCK_CV_INPUT].getVoltage(), 0.1f, 1.f);
         bool clockState =
@@ -171,33 +145,11 @@ struct Pascal : Module {
 
         lights[CLOCK_INDICATOR_LIGHT].setBrightnessSmooth(clockState ? 1.f : 0.f, args.sampleTime);
 
-        auto length = static_cast<int>(std::round(params[LENGTH_PARAM].getValue() + inputs[LENGTH_CV_INPUT].getVoltage() * 32 / 10));
-        length = std::min(std::max(1, length), 32);
-        setBinaryIndicatorLight(LENGTH_BINARY_COUNTER_LIGHT, length, args.sampleTime);
-
-        int globalDivisions = 1;
-        for (int div = 0; div < 3; ++div) {
-            divisions[div] = static_cast<int>(std::round(params[divisionsParams[div]].getValue() + inputs[divisionInputs[div]].getVoltage() * 32 / 10));
-            divisions[div] = std::min(std::max(1, divisions[div]), 32);
-            setBinaryIndicatorLight(divisionIndicators[div], divisions[div], args.sampleTime);
-            globalDivisions *= divisions[div];
-        }
-
         if (clockGoingLow) {
             ++step;
-            auto advance = isFrozen ? 0 : (step / length);
-            column += advance;
+            column += step / length;
             step %= length;
             column %= 4;
-            if (step == 0) {
-                state[column][step] = state[(column + 3) % 4][step] % globalDivisions;
-            } else {
-                state[column][step] = (state[(column + 3) % 4][step] + state[(column + 3) % 4][step - 1]) % globalDivisions;
-            }
-
-            for (int i = length; i < 32; ++i) {
-                state[column][i] = 0;
-            }
         }
 
 
@@ -226,51 +178,11 @@ struct Pascal : Module {
                 lights[STATE_LIGHT + i * 3 + 1].setBrightnessSmooth(1.f, args.sampleTime);
                 lights[STATE_LIGHT + i * 3 + 2].setBrightnessSmooth(1.f, args.sampleTime);
             } else {
-                float r, g, b;
-                getColor(state[i / 32][i % 32], r, g, b);
-
-                lights[STATE_LIGHT + i * 3 + 0].setBrightnessSmooth(r, args.sampleTime);
-                lights[STATE_LIGHT + i * 3 + 1].setBrightnessSmooth(g, args.sampleTime);
-                lights[STATE_LIGHT + i * 3 + 2].setBrightnessSmooth(b, args.sampleTime);
+                lights[STATE_LIGHT + i * 3 + 0].setBrightnessSmooth(0.f, args.sampleTime);
+                lights[STATE_LIGHT + i * 3 + 1].setBrightnessSmooth(0.f, args.sampleTime);
+                lights[STATE_LIGHT + i * 3 + 2].setBrightnessSmooth(0.f, args.sampleTime);
             }
         }
-
-
-        {
-            bool trig1 = clockState && (val % divisions[0]);
-            lights[COUNTER1_INDICATOR_LIGHT].setBrightnessSmooth(trig1 ? 1.0 : 0.0, args.sampleTime);
-            outputs[COUNTER1_TRIGGER_OUTPUT].setVoltage(trig1 ? 10.0 : 0.0);
-        }
-
-        {
-            bool trig2 = clockState && (val % divisions[1]);
-            lights[COUNTER2_INDICATOR_LIGHT].setBrightnessSmooth(trig2 ? 1.0 : 0.0, args.sampleTime);
-            outputs[COUNTER2_TRIGGER_OUTPUT].setVoltage(trig2 ? 10.0 : 0.0);
-        }
-
-        {
-            bool trig3 = clockState && (val % divisions[2]);
-            outputs[COUNTER3_TRIGGER_OUTPUT].setVoltage(trig3 ? 10.0 : 0.0);
-            outputs[COUNTER3_TRIG1_OUTPUT].setVoltage(trig3 && (val % divisions[2] == 1) ? 10.0 : 0.0);
-            outputs[COUNTER3_TRIG2_OUTPUT].setVoltage(trig3 && (val % divisions[2] == 2) ? 10.0 : 0.0);
-            outputs[COUNTER3_TRIG3_OUTPUT].setVoltage(trig3 && (val % divisions[2] == 3) ? 10.0 : 0.0);
-            outputs[COUNTER3_TRIG4_OUTPUT].setVoltage(trig3 && (val % divisions[2] == 4) ? 10.0 : 0.0);
-            outputs[COUNTER3_TRIG5_OUTPUT].setVoltage(trig3 && (val % divisions[2] == 5) ? 10.0 : 0.0);
-            outputs[COUNTER3_TRIG6_OUTPUT].setVoltage(trig3 && (val % divisions[2] == 6) ? 10.0 : 0.0);
-
-            lights[COUNTER3_INDICATOR_LIGHT].setBrightnessSmooth(trig3 ? 1.0 : 0.0, args.sampleTime);
-            lights[COUNTER3_INDICATOR1_LIGHT].setBrightnessSmooth(trig3 && (val % divisions[2] == 6) ? 1.0 : 0.0, args.sampleTime);
-            lights[COUNTER3_INDICATOR1_LIGHT].setBrightnessSmooth(trig3 && (val % divisions[2] == 1) ? 1.0 : 0.0, args.sampleTime);
-            lights[COUNTER3_INDICATOR2_LIGHT].setBrightnessSmooth(trig3 && (val % divisions[2] == 2) ? 1.0 : 0.0, args.sampleTime);
-            lights[COUNTER3_INDICATOR3_LIGHT].setBrightnessSmooth(trig3 && (val % divisions[2] == 3) ? 1.0 : 0.0, args.sampleTime);
-            lights[COUNTER3_INDICATOR4_LIGHT].setBrightnessSmooth(trig3 && (val % divisions[2] == 4) ? 1.0 : 0.0, args.sampleTime);
-            lights[COUNTER3_INDICATOR5_LIGHT].setBrightnessSmooth(trig3 && (val % divisions[2] == 5) ? 1.0 : 0.0, args.sampleTime);
-            lights[COUNTER3_INDICATOR6_LIGHT].setBrightnessSmooth(trig3 && (val % divisions[2] == 6) ? 1.0 : 0.0, args.sampleTime);
-        }
-
-        outputs[COUNTER1_PITCH_OUTPUT].setVoltage(pitch[0]);
-        outputs[COUNTER2_PITCH_OUTPUT].setVoltage(pitch[1]);
-        outputs[COUNTER3_PITCH_OUTPUT].setVoltage(pitch[2]);
     }
 };
 
