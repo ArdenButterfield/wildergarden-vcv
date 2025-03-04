@@ -16,11 +16,12 @@ add_library(wildergarden STATIC)
 
 set (SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../src)
 
+
+file(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS "${SOURCE_DIR}/*.cpp")
+
 target_sources(wildergarden
     PRIVATE
-        ${SOURCE_DIR}/dimit.cpp
-        ${SOURCE_DIR}/Pascal.cpp
-        ${SOURCE_DIR}/plugin.cpp
+        ${SourceFiles}
 )
 
 target_include_directories(wildergarden
