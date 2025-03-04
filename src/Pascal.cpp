@@ -50,11 +50,7 @@ struct Pascal : Module {
 		COUNTER3_INDICATOR4_LIGHT,
 		COUNTER3_INDICATOR5_LIGHT,
 		COUNTER3_INDICATOR6_LIGHT,
-        ENUMS(STATE_LIGHT, 384),
-        ENUMS(LENGTH_BINARY_COUNTER_LIGHT, 5),
-        ENUMS(DIVISIONS1_BINARY_COUNTER_LIGHT, 5),
-        ENUMS(DIVISIONS2_BINARY_COUNTER_LIGHT, 5),
-        ENUMS(DIVISIONS3_BINARY_COUNTER_LIGHT, 5),
+        ENUMS(STATE_LIGHT, 384), // 32 * 4 * 3
 		LIGHTS_LEN
 	};
 
@@ -147,7 +143,7 @@ struct Pascal : Module {
 
         if (clockGoingLow) {
             ++step;
-            column += step / length;
+            column += step / 32;
             step %= length;
             column %= 4;
         }
@@ -219,18 +215,6 @@ struct PascalWidget : ModuleWidget {
 		addChild(createLightCentered<MediumLight<YellowLight>>(mm2px(Vec(68.636, 113.301)), module, Pascal::COUNTER3_INDICATOR4_LIGHT));
 		addChild(createLightCentered<MediumLight<YellowLight>>(mm2px(Vec(79.606, 113.301)), module, Pascal::COUNTER3_INDICATOR5_LIGHT));
 		addChild(createLightCentered<MediumLight<YellowLight>>(mm2px(Vec(90.575, 113.301)), module, Pascal::COUNTER3_INDICATOR6_LIGHT));
-
-		// mm2px(Vec(24.665, 4.142))
-		// addChild(createWidget<Widget>(mm2px(Vec(72.015, 37.498))));
-        addBinaryCounter(module, Pascal::LENGTH_BINARY_COUNTER_LIGHT, 72.015 + 24.665 * 0.5, 37.498 + 4.142 * 0.5);
-
-        // mm2px(Vec(35.367, 7.613))
-		// addChild(createWidget<Widget>(mm2px(Vec(61.591, 59.585))));
-        addBinaryCounter(module, Pascal::DIVISIONS3_BINARY_COUNTER_LIGHT, 61.591 + 35.367 * 0.5, 59.585 + 7.613 * 0.5);
-
-        // mm2px(Vec(20.488, 8.154))
-		// addChild(createWidget<Widget>(mm2px(Vec(4.823, 70.483))));
-        addBinaryCounter(module, Pascal::DIVISIONS1_BINARY_COUNTER_LIGHT, 4.823 + 20.488 * 0.5, 70.483 + 8.154 * 0.5);
 
         const auto stateWidth = 18.136;
         const auto stateHeight = 74.382;
