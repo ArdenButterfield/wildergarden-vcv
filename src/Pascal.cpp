@@ -152,25 +152,6 @@ struct Pascal : Module {
             column %= 4;
         }
 
-
-        auto insertVolt = inputs[INSERT_CV_INPUT].getVoltage();
-        if (insertTrigger.process(insertVolt, 0.1f, 1.f) || params[INSERT_PARAM].getValue() > 0.5f) {
-            state[column][step] = 1;
-            lights[INSERT_INDICATOR_LIGHT].setBrightnessSmooth(1.f, args.sampleTime);
-        } else {
-            lights[INSERT_INDICATOR_LIGHT].setBrightnessSmooth(0.f, args.sampleTime);
-        }
-
-        auto val = state[column][step];
-
-        if (clockGoingHigh) {
-            for (int i = 0; i < 3; ++i) {
-                if (val % divisions[i]) {
-                    pitch[i] = static_cast<float>(state[column][step] % divisions[i] - 1) * 10.f / divisions[i];
-                }
-            }
-        }
-
         for (int i = 0; i < 32 * 4; ++i) {
             if (column * 32 + step == i) {
                 // white
