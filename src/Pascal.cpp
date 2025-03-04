@@ -144,7 +144,7 @@ struct Pascal : Module {
         if (clockGoingLow) {
             ++step;
             column += step / 32;
-            step %= length;
+            step %= 32;
             column %= 4;
         }
 
