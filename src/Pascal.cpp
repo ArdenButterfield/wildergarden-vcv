@@ -93,13 +93,6 @@ struct Pascal : Module {
 
         column = 0;
         step = 0;
-
-        for (auto& col : state) {
-            for (auto& i : col) {
-                i = 0;
-            }
-        }
-
     }
 
 	void process(const ProcessArgs& args) override {
