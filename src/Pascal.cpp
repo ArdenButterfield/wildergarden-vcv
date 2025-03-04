@@ -233,11 +233,6 @@ struct PascalWidget : ModuleWidget {
             auto lightIndex = Pascal::STATE_LIGHT + i * 3;
             addChild(createLightCentered<SmallLight<RedGreenBlueLight>>(mm2px(Vec(x, y)), module, lightIndex));
         }
-
-		// mm2px(Vec(20.488, 8.154))
-		addChild(createWidget<Widget>(mm2px(Vec(4.863, 109.56))));
-        addBinaryCounter(module, Pascal::DIVISIONS2_BINARY_COUNTER_LIGHT, 4.823 + 20.488 * 0.5, 109.56 + 8.154 * 0.5);
-
     }
 
     void addBinaryCounter(Pascal* module, int enumIndex, double centerX, double centerY) {
