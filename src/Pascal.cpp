@@ -109,13 +109,11 @@ struct Pascal : Module {
 
         if (clockGoingLow) {
             ++step;
-            column += step / 32;
-            step %= 32;
-            column %= 4;
+            step %= 32 * 4;
         }
 
         for (int i = 0; i < 32 * 4; ++i) {
-            if (column * 32 + step == i) {
+            if (step == i) {
                 // white
                 lights[STATE_LIGHT + i * 3 + 0].setBrightnessSmooth(1.f, args.sampleTime);
                 lights[STATE_LIGHT + i * 3 + 1].setBrightnessSmooth(1.f, args.sampleTime);
