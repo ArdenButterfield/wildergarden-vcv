@@ -8,5 +8,6 @@ using namespace rack;
 extern Plugin* pluginInstance;
 extern Model* modelDimit;
 extern Model* modelPascal;
+extern Model* modelModmix;
 // Declare each Model, defined in each module source file
 // extern Model* modelMyModule;
