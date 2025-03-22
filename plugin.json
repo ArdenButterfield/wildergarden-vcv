@@ -35,7 +35,7 @@
     },
     {
       "slug": "modmix",
-      "name": "Mod Mix",
+      "name": "ModMix",
       "description": "Wavefolding mixer for audio and CV",
       "tags": [
         "Waveshaper",
