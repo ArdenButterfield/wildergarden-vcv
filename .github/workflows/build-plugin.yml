@@ -162,9 +162,6 @@ jobs:
 
       - name: Build
         run: |
-          cd metamodule-plugin-sdk
-          git checkout v2.0-dev
-          cd ..
           cd metamodule
           cmake -B build -G Ninja -DMETAMODULE_SDK_DIR=../metamodule-plugin-sdk -DINSTALL_DIR=${{ github.workspace }}/metamodule-plugins
           cmake --build build
