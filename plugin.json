@@ -48,6 +48,12 @@
       "name": "Seek",
       "description": "Sequencer for Melodies",
       "tags": []
+    },
+    {
+      "slug": "Scrub",
+      "name": "Scrub",
+      "description": "",
+      "tags": []
     }
   ]
 }

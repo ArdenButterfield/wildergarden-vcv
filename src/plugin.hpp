@@ -10,6 +10,7 @@ extern Model* modelDimit;
 extern Model* modelPascal;
 extern Model* modelModmix;
 extern Model* modelSeek;
+extern Model* modelScrub;
 
 // Declare each Model, defined in each module source file
 // extern Model* modelMyModule;

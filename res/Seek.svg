@@ -25,14 +25,14 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      inkscape:zoom="3.1536195"
-     inkscape:cx="74.359002"
-     inkscape:cy="201.03884"
+     inkscape:cx="74.200454"
+     inkscape:cy="150.62058"
      inkscape:window-width="1920"
      inkscape:window-height="1016"
      inkscape:window-x="1920"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="svg1" />
   <defs
      id="defs1">
     <linearGradient
@@ -223,7 +223,7 @@
   <g
      id="g7"
      inkscape:label="components"
-     style="display:none">
+     style="display:inline">
     <circle
        style="fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:0.291518;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:48.849;stroke-opacity:1;paint-order:stroke fill markers"
        id="path7"

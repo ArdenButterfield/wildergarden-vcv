@@ -10,6 +10,8 @@ void init(Plugin* p) {
     p->addModel(modelPascal);
     p->addModel(modelModmix);
     p->addModel(modelSeek);
+    p->addModel(modelScrub);
+
     // Add modules here
 	// p->addModel(modelMyModule);
 

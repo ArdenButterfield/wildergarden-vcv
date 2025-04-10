@@ -1,5 +1,6 @@
 #include "plugin.hpp"
 
+#define NUM_SESSIONS 4
 
 struct Seek : Module {
 	enum ParamId {
@@ -31,6 +32,8 @@ struct Seek : Module {
 		RECORD_LIGHT,
 		CLEAR_LIGHT,
 		OUTPUT_LIGHT,
+        ENUMS(SESSION_INDICATOR, NUM_SESSIONS),
+        ENUMS(VISUALIZER, NUM_SESSIONS * 8 * 3),
 		LIGHTS_LEN
 	};
 
@@ -91,8 +94,9 @@ struct SeekWidget : ModuleWidget {
 		addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(55.021, 86.874)), module, Seek::OUTPUT_LIGHT));
 
 
-        // session indicator
-		addChild(createWidget<Widget>(mm2px(Vec(18.509, 19.168))));
+        for (auto i = 0; i < NUM_SESSIONS; ++i) {
+            addChild(createLightCentered<MediumLight<BlueLight>>(mm2px(Vec(19.998, 28.508 + (i * 4.f) - 4.f * 1.5f)), module, Seek::SESSION_INDICATOR + i));
+        }
 
         // session visualizer
         addChild(createWidget<Widget>(mm2px(Vec(23.397, 19.168))));
