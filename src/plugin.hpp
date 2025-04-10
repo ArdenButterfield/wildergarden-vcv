@@ -9,5 +9,7 @@ extern Plugin* pluginInstance;
 extern Model* modelDimit;
 extern Model* modelPascal;
 extern Model* modelModmix;
+extern Model* modelSeek;
+
 // Declare each Model, defined in each module source file
 // extern Model* modelMyModule;

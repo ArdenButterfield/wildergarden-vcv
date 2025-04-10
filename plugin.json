@@ -42,6 +42,12 @@
         "Utility",
         "Mixer"
       ]
+    },
+    {
+      "slug": "Seek",
+      "name": "Seek",
+      "description": "Sequencer for Melodies",
+      "tags": []
     }
   ]
 }
