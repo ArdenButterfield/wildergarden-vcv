@@ -1,5 +1,8 @@
 #include "plugin.hpp"
 #include <iostream>
+#include <array>
+#include <vector>
+#include <string>
 
 struct Scrub : Module {
 	enum ParamId {
@@ -33,10 +36,18 @@ struct Scrub : Module {
     int clockLength;
     int beatCounter;
 
+    const std::array<int, 10> lengthOptions {
+        1, 2, 3, 4, 6, 8, 12, 16, 24, 32
+    };
+
     Scrub() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
-		configParam(LENGTH_PARAM, 1.f, 32.f, 8.f, "Length");
-		configParam(SUBDIVISIONS_PARAM, 1.f, 32.f, 4.f, "Subdivisions");
+        std::vector<std::string> lengthOptionsStrings;
+        for (auto i : lengthOptions) {
+            lengthOptionsStrings.push_back(std::to_string(i));
+        }
+		configSwitch(LENGTH_PARAM, 1.f, lengthOptionsStrings.size(), 4.f, "Length", lengthOptionsStrings);
+        configSwitch(SUBDIVISIONS_PARAM, 1.f, lengthOptionsStrings.size(), 4.f, "Subdivisions", lengthOptionsStrings);
 		configParam(QUANTIZE_PARAM, 0.f, 1.f, 0.f, "Quantize");
 		configInput(CLOCK_INPUT, "Clock");
 		configInput(LENGTH_CV_INPUT, "Length CV");
@@ -57,8 +68,12 @@ struct Scrub : Module {
 
 
     void process(const ProcessArgs& args) override {
-        auto length = static_cast<int>(std::round(params[LENGTH_PARAM].getValue() + inputs[LENGTH_CV_INPUT].getVoltage() * 32 / 10));
-        auto subdivisions = static_cast<int>(std::round(params[SUBDIVISIONS_PARAM].getValue() + inputs[SUBDIVISIONS_CV_INPUT].getVoltage() * 32 / 10));
+        int length = params[LENGTH_PARAM].getValue() + inputs[LENGTH_CV_INPUT].getVoltage() * (10.f / lengthOptions.size());
+        length = std::min(std::max(1, length), static_cast<int>(lengthOptions.size()));
+        length = lengthOptions[length - 1];
+        int subdivisions = params[SUBDIVISIONS_PARAM].getValue() + inputs[SUBDIVISIONS_CV_INPUT].getVoltage() * (10.f / lengthOptions.size());
+        subdivisions = std::min(std::max(1, subdivisions), static_cast<int>(lengthOptions.size()));
+        subdivisions = lengthOptions[subdivisions - 1];
         auto quantized = std::min(std::max(0.f, params[QUANTIZE_PARAM].getValue() + inputs[QUANTIZE_CV_INPUT].getVoltage() * 0.1f), 1.f);
         auto clockGoingHigh = clockTrigger.process(inputs[CLOCK_INPUT].getVoltage(), args.sampleTime);
         if (clockGoingHigh) {
