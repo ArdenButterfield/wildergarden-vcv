@@ -3,6 +3,7 @@
 #include <array>
 #include <vector>
 #include <string>
+#include <cmath>
 
 struct Scrub : Module {
 	enum ParamId {
@@ -31,13 +32,19 @@ struct Scrub : Module {
 		LIGHTS_LEN
 	};
 
+    enum RoundingDirection {
+        ROUND_UP,
+        ROUND_DOWN,
+        ROUND_CENTER
+    };
+
     dsp::SchmittTrigger clockTrigger;
     int clockCounter;
     int clockLength;
     int beatCounter;
 
-    const std::array<int, 10> lengthOptions {
-        1, 2, 3, 4, 6, 8, 12, 16, 24, 32
+    const std::vector<int> lengthOptions {
+        1, 2, 3, 4, 6, 8, 12, 16
     };
 
     Scrub() {
@@ -66,6 +73,28 @@ struct Scrub : Module {
         }
     }
 
+    float quantize(float input, float step, RoundingDirection roundingDirection, float roundingAmount) {
+        if (step < 0.001) {
+            return input;
+        }
+
+        float rounded;
+
+        if (roundingDirection == ROUND_DOWN) {
+            rounded = std::floor(input / step) * step;
+        } else if (roundingDirection == ROUND_UP) {
+            rounded = std::ceil(input / step) * step;
+        } else if (roundingDirection == ROUND_CENTER) {
+            rounded = (std::floor(input / step + 0.5f) - 0.5f) * step;
+        } else {
+            rounded = input;
+        }
+        if (std::abs(rounded - input) < roundingAmount * step) {
+            return rounded;
+        } else {
+            return input;
+        }
+    }
 
     void process(const ProcessArgs& args) override {
         int length = params[LENGTH_PARAM].getValue() + inputs[LENGTH_CV_INPUT].getVoltage() * (10.f / lengthOptions.size());
@@ -98,11 +127,26 @@ struct Scrub : Module {
         lights[OUT_LIGHT].setBrightnessSmooth(onSubdivision ? 1.f : 0.f, args.sampleTime);
 
         auto totalNumDivisions = length * subdivisions;
+        auto totalLength = length * clockLength;
+        auto elapsedTicks = std::min(beatCounter * clockLength + clockCounter, totalLength - 1);
+
+        auto maximumLength = clockLength * 16;
+        auto unquantizedOut = static_cast<float>(elapsedTicks) * 10.f / static_cast<float>(maximumLength);
+        auto subdivisionStep = (10.f / 16.f) / subdivisions;
+        auto quantizeAmount = params[QUANTIZE_PARAM].getValue() + inputs[QUANTIZE_CV_INPUT].getVoltage() * 0.1f;
+        quantizeAmount = std::min(std::max(0.f, quantizeAmount), 1.f);
+        outputs[STEP_OUTPUT].setVoltage(quantize(unquantizedOut, subdivisionStep, ROUND_DOWN, quantizeAmount));
+
+
+
+        /*
+
         auto rescale = totalNumDivisions > 0 ? 10.f / static_cast<float>(totalNumDivisions) : 0.f;
+        beatCounter * clockLength + clockCounter
         auto stepLength = clockLength / subdivisions;
         auto currentStep = std::min(clockCounter / stepLength, totalNumDivisions - 1);
         auto elapsedWithinCurrentStep = clockCounter - (currentStep * stepLength);
-        outputs[STEP_OUTPUT].setVoltage((currentStep + quantized * static_cast<float>(elapsedWithinCurrentStep) / static_cast<float>(stepLength)) * rescale);
+        outputs[STEP_OUTPUT].setVoltage((currentStep + quantized * static_cast<float>(elapsedWithinCurrentStep) / static_cast<float>(stepLength)) * rescale);*/
         clockCounter++;
     }
 };
