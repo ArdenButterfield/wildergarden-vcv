@@ -1,6 +1,100 @@
 #include "plugin.hpp"
+#include <vector>
+#include <map>
+#include <cmath>
+#include <iterator>
 
 #define NUM_SESSIONS 4
+
+struct Note {
+    float start;
+    float end;
+    float pitch;
+    float velocity;
+};
+
+struct Track {
+    Track() : noteIsInHand(false) {
+    }
+    std::map<float, Note> noteDeck;
+    dsp::BooleanTrigger recordTrigger;
+    dsp::SchmittTrigger gateTrigger;
+    bool wasRecording;
+    Note noteInHand;
+    bool noteIsInHand;
+
+    void clearAll() {
+        noteIsInHand = false;
+        noteDeck.clear();
+    }
+
+    bool hasNotesInRange(float low, float high) {
+        auto note = noteDeck.upper_bound(low);
+        return (note != noteDeck.end() && note->first < high);
+    }
+
+    void eraseNotesInRange(float start, float end) {
+        if (start <= end) {
+            for (auto it = noteDeck.lower_bound(start);
+                 it != noteDeck.end() && it->first < end;
+                 it = noteDeck.erase(it)) { }
+        } else {
+            for (auto it = noteDeck.lower_bound(start);
+                it != noteDeck.end();
+                it = noteDeck.erase(it)) {}
+            for (auto it = noteDeck.begin();
+                it != noteDeck.end() && it->first < end;
+                it = noteDeck.erase(it)) {}
+        }
+    }
+
+    void process(bool record, bool clear, float position,
+                 float pitch, float gate,
+                 float& pitchOut, float& gateOut) {
+        if (record && !wasRecording) {
+            noteIsInHand = false;
+            gateTrigger.reset();
+        }
+
+        // TODO: clear
+
+        if (record) {
+            if (noteIsInHand) {
+                noteInHand.end = position;
+                noteInHand.velocity = std::max(gate, noteInHand.velocity);
+            }
+            bool gateOpening = gateTrigger.process(gate, 0.1f, 1.f);
+            if (gateOpening) {
+                noteInHand.start = position;
+                noteInHand.end = position;
+                noteInHand.pitch = pitch;
+                noteInHand.velocity = gate;
+                noteIsInHand = true;
+            } else if (noteIsInHand && !gateTrigger.isHigh()) {
+                eraseNotesInRange(noteInHand.start, noteInHand.end);
+                noteDeck[noteInHand.start] = noteInHand;
+                noteIsInHand = false;
+            } else if (noteIsInHand && std::abs(pitch - noteInHand.pitch) > 0.01) {
+                eraseNotesInRange(noteInHand.start, noteInHand.end);
+                noteDeck[noteInHand.start] = noteInHand;
+                noteInHand.start = position;
+                noteInHand.end = position;
+                noteInHand.pitch = pitch;
+                noteInHand.velocity = gate;
+            }
+        }
+        wasRecording = record;
+
+        auto upper = noteDeck.upper_bound(position);
+        if (upper != noteDeck.begin()) {
+            auto current = std::prev(upper);
+            if (current->second.end >= position) {
+                pitchOut = current->second.pitch;
+                gateOut = current->second.velocity;
+            }
+        }
+    }
+};
 
 struct Seek : Module {
 	enum ParamId {
@@ -37,6 +131,10 @@ struct Seek : Module {
 		LIGHTS_LEN
 	};
 
+    dsp::SchmittTrigger recordTrigger, trackUpTrigger, trackDownTrigger, clearTrigger;
+    std::array<Track, NUM_SESSIONS> tracks;
+    int currentTrack;
+
 	Seek() {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 		configParam(BIPOLAR_UNIPOLAR_PARAM, 0.f, 1.f, 0.f, "");
@@ -53,9 +151,63 @@ struct Seek : Module {
 		configInput(SELECT_CV_INPUT, "");
 		configOutput(PITCH_OUTPUT, "");
 		configOutput(GATE_OUTPUT, "");
+        currentTrack = 0;
 	}
 
 	void process(const ProcessArgs& args) override {
+        bool isBipolar = params[BIPOLAR_UNIPOLAR_PARAM].getValue() < 0.5f;
+        auto position = inputs[POSITION_INPUT].getVoltage() + (isBipolar ? 5.f : 0.f);
+        lights[POSITION_LIGHT].setBrightnessSmooth(position * 0.1f, args.sampleTime);
+
+        recordTrigger.process(inputs[RECORD_INPUT].getVoltage(), 0.1f, 1.f);
+        bool isRecording = recordTrigger.isHigh() || (params[RECORD_PARAM].getValue() > 0.5f);
+        lights[RECORD_LIGHT].setBrightnessSmooth(isRecording ? 1.f : 0.f, args.sampleTime);
+
+        if (trackUpTrigger.process(inputs[PREV_SESSION_INPUT].getVoltage(), 0.1f, 1.f)) {
+            currentTrack = (currentTrack + 3) % NUM_SESSIONS;
+        }
+        if (trackDownTrigger.process(inputs[NEXT_SESSION_INPUT].getVoltage(), 0.1f, 1.f)) {
+            currentTrack = (currentTrack + 1) % NUM_SESSIONS;
+        }
+
+        bool clearIsTrigger = params[CLEAR_MODE_PARAM].getValue() < 0.5f;
+        if (clearIsTrigger && clearTrigger.process(inputs[CLEAR_INPUT].getVoltage())) {
+            for (auto& track : tracks) {
+                track.clearAll();
+            }
+        }
+
+        float pitchOut, gateOut;
+        tracks[currentTrack].process(isRecording, (!clearIsTrigger && inputs[CLEAR_INPUT].getVoltage()), position,
+                                     inputs[PITCH_INPUT].getVoltage(), inputs[GATE_INPUT].getVoltage(),
+                                     pitchOut, gateOut);
+
+        outputs[PITCH_OUTPUT].setVoltage(pitchOut);
+        outputs[GATE_OUTPUT].setVoltage(gateOut);
+
+        for (auto i = 0; i < NUM_SESSIONS; ++i) {
+            lights[SESSION_INDICATOR + i].setBrightnessSmooth((i == currentTrack) ? 1.f : 0.f, args.sampleTime);
+        }
+
+        for (auto session = 0; session < NUM_SESSIONS; ++session) {
+            for (auto step = 0; step < 8; ++step) {
+                if ((session == currentTrack) && (step == std::floor(position * 8.f / 10.f))) {
+                    lights[VISUALIZER + session * 8 * 3 + step * 3].setBrightnessSmooth(1.f);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 1].setBrightnessSmooth(1.f);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 2].setBrightnessSmooth(1.f);
+                } else if (tracks[session].hasNotesInRange(std::floor(step * 8.f / 10.f) * 10.f / 8.f,
+                                                                (std::floor(step * 8.f / 10.f) + 1) * 10.f / 8.f)) {
+                    lights[VISUALIZER + session * 8 * 3 + step * 3].setBrightnessSmooth(0.f);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 1].setBrightnessSmooth(0.f);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 2].setBrightnessSmooth(1.f);
+
+                } else {
+                    lights[VISUALIZER + session * 8 * 3 + step * 3].setBrightnessSmooth(0.f);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 1].setBrightnessSmooth(0.f);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 2].setBrightnessSmooth(0.f);
+                }
+            }
+        }
 	}
 };
 
@@ -70,9 +222,9 @@ struct SeekWidget : ModuleWidget {
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(26.546, 69.695)), module, Seek::BIPOLAR_UNIPOLAR_PARAM));
-		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(49.415, 69.517)), module, Seek::RECORD_PARAM));
-		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(6.421, 108.993)), module, Seek::CLEAR_MODE_PARAM));
+		addParam(createParamCentered<CKSS>(mm2px(Vec(26.546, 69.695)), module, Seek::BIPOLAR_UNIPOLAR_PARAM));
+		addParam(createParamCentered<CKD6>(mm2px(Vec(49.415, 69.517)), module, Seek::RECORD_PARAM));
+		addParam(createParamCentered<CKSS>(mm2px(Vec(6.421, 108.993)), module, Seek::CLEAR_MODE_PARAM));
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(30.178, 108.993)), module, Seek::SELECT_PARAM));
 
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(13.664, 23.851)), module, Seek::PREV_SESSION_INPUT));
@@ -97,6 +249,17 @@ struct SeekWidget : ModuleWidget {
         for (auto i = 0; i < NUM_SESSIONS; ++i) {
             addChild(createLightCentered<MediumLight<BlueLight>>(mm2px(Vec(19.998, 28.508 + (i * 4.f) - 4.f * 1.5f)), module, Seek::SESSION_INDICATOR + i));
         }
+
+        const float centerX = 23.397 + 31.334 / 2;
+        const float centerY = 19.168 + 18.68 / 2;
+        for (auto row = 0; row < NUM_SESSIONS; ++row) {
+            for (auto i = 0; i < 8; ++i) {
+                auto x = centerX + (i - 3.5f) * 4.f;
+                auto y = centerY + (row - 1.5f) * 4.f;
+                addChild(createLightCentered<MediumLight<RedGreenBlueLight>>(mm2px(Vec(x, y)), module, Seek::VISUALIZER + row * 8 * 3 + i * 3));
+            }
+        }
+
 
         // session visualizer
         addChild(createWidget<Widget>(mm2px(Vec(23.397, 19.168))));

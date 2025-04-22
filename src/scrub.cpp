@@ -104,7 +104,7 @@ struct Scrub : Module {
         subdivisions = std::min(std::max(1, subdivisions), static_cast<int>(lengthOptions.size()));
         subdivisions = lengthOptions[subdivisions - 1];
         auto quantized = std::min(std::max(0.f, params[QUANTIZE_PARAM].getValue() + inputs[QUANTIZE_CV_INPUT].getVoltage() * 0.1f), 1.f);
-        auto clockGoingHigh = clockTrigger.process(inputs[CLOCK_INPUT].getVoltage(), args.sampleTime);
+        auto clockGoingHigh = clockTrigger.process(inputs[CLOCK_INPUT].getVoltage(), 0.1f, 1.f);
         if (clockGoingHigh) {
             if (clockCounter < args.sampleRate * 10) {
                 clockLength = clockCounter;
