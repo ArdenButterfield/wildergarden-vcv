@@ -233,19 +233,19 @@ struct Seek : Module {
         for (auto session = 0; session < NUM_SESSIONS; ++session) {
             for (auto step = 0; step < 8; ++step) {
                 if ((session == currentTrack) && (step == std::floor(position * 8.f / 10.f))) {
-                    lights[VISUALIZER + session * 8 * 3 + step * 3].setBrightnessSmooth(1.f);
-                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 1].setBrightnessSmooth(1.f);
-                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 2].setBrightnessSmooth(1.f);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3].setBrightnessSmooth(1.f, args.sampleTime);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 1].setBrightnessSmooth(1.f, args.sampleTime);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 2].setBrightnessSmooth(1.f, args.sampleTime);
                 } else if (tracks[session].hasNotesInRange(std::floor(step * 8.f / 10.f) * 10.f / 8.f,
                                                                 (std::floor(step * 8.f / 10.f) + 1) * 10.f / 8.f)) {
-                    lights[VISUALIZER + session * 8 * 3 + step * 3].setBrightnessSmooth(0.f);
-                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 1].setBrightnessSmooth(0.f);
-                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 2].setBrightnessSmooth(1.f);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3].setBrightnessSmooth(0.f, args.sampleTime);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 1].setBrightnessSmooth(0.f, args.sampleTime);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 2].setBrightnessSmooth(1.f, args.sampleTime);
 
                 } else {
-                    lights[VISUALIZER + session * 8 * 3 + step * 3].setBrightnessSmooth(0.f);
-                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 1].setBrightnessSmooth(0.f);
-                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 2].setBrightnessSmooth(0.f);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3].setBrightnessSmooth(0.f, args.sampleTime);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 1].setBrightnessSmooth(0.f, args.sampleTime);
+                    lights[VISUALIZER + session * 8 * 3 + step * 3 + 2].setBrightnessSmooth(0.f, args.sampleTime);
                 }
             }
         }
