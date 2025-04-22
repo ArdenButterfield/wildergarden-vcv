@@ -1,6 +1,7 @@
 #include "plugin.hpp"
 #include <vector>
 #include <map>
+#include <array>
 #include <cmath>
 #include <iterator>
 #include <iostream>
