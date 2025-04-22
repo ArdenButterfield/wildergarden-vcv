@@ -3,6 +3,7 @@
 #include <map>
 #include <cmath>
 #include <iterator>
+#include <iostream>
 
 #define NUM_SESSIONS 4
 
@@ -14,7 +15,7 @@ struct Note {
 };
 
 struct Track {
-    Track() : noteIsInHand(false) {
+    Track() : noteIsInHand(false), previousPosition(0) {
     }
     std::map<float, Note> noteDeck;
     dsp::BooleanTrigger recordTrigger;
@@ -22,6 +23,7 @@ struct Track {
     bool wasRecording;
     Note noteInHand;
     bool noteIsInHand;
+    float previousPosition;
 
     void clearAll() {
         noteIsInHand = false;
@@ -48,6 +50,46 @@ struct Track {
         }
     }
 
+    void getNotesAtCurrentPostion(float position, bool clear, float& pitchOut, float& gateOut) {
+        auto upper = noteDeck.upper_bound(position);
+        gateOut = 0;
+        pitchOut = 0;
+        if (upper == noteDeck.begin()) {
+            // no notes
+            return;
+        }
+        auto current = std::prev(upper);
+        if (current->second.end < position) {
+            // note has already ended
+            return;
+        }
+        if (clear) {
+            if (position >= previousPosition) {
+                if ((current->first >= previousPosition) && (current->first <= position)) {
+                    noteDeck.erase(current);
+                } else {
+                    current->second.end = previousPosition;
+                }
+            } else if (position + 0.5f < previousPosition) {
+                // we're not scrubbing backwards-- we're overflowing and looping back
+                if ((current->first >= previousPosition) || (current->first <= position)) {
+                    noteDeck.erase(current);
+                } else {
+                    current->second.end = previousPosition;
+                }
+            } else {
+                if ((current->first <= previousPosition) && (current->first >= position)) {
+                    noteDeck.erase(current);
+                } else {
+                    current->second.end = position;
+                }
+            }
+            return;
+        }
+        pitchOut = current->second.pitch;
+        gateOut = current->second.velocity;
+    }
+
     void process(bool record, bool clear, float position,
                  float pitch, float gate,
                  float& pitchOut, float& gateOut) {
@@ -56,7 +98,7 @@ struct Track {
             gateTrigger.reset();
         }
 
-        // TODO: clear
+        getNotesAtCurrentPostion(position, clear, pitchOut, gateOut);
 
         if (record) {
             if (noteIsInHand) {
@@ -72,10 +114,12 @@ struct Track {
                 noteIsInHand = true;
             } else if (noteIsInHand && !gateTrigger.isHigh()) {
                 eraseNotesInRange(noteInHand.start, noteInHand.end);
+                std::cout << "note added " << noteInHand.start << " " << noteInHand.end << " " << noteInHand.pitch << "\n";
                 noteDeck[noteInHand.start] = noteInHand;
                 noteIsInHand = false;
             } else if (noteIsInHand && std::abs(pitch - noteInHand.pitch) > 0.01) {
                 eraseNotesInRange(noteInHand.start, noteInHand.end);
+                std::cout << "note added " << noteInHand.start << " " << noteInHand.end << " " << noteInHand.pitch << "\n";
                 noteDeck[noteInHand.start] = noteInHand;
                 noteInHand.start = position;
                 noteInHand.end = position;
@@ -85,14 +129,11 @@ struct Track {
         }
         wasRecording = record;
 
-        auto upper = noteDeck.upper_bound(position);
-        if (upper != noteDeck.begin()) {
-            auto current = std::prev(upper);
-            if (current->second.end >= position) {
-                pitchOut = current->second.pitch;
-                gateOut = current->second.velocity;
-            }
+        if (gate > 0.1f) {
+            pitchOut = pitch;
+            gateOut = gate;
         }
+        previousPosition = position;
     }
 };
 
