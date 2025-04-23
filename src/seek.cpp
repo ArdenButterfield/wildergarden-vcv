@@ -32,7 +32,7 @@ struct Track {
     }
 
     bool hasNotesInRange(float low, float high) {
-        auto note = noteDeck.upper_bound(low);
+        auto note = noteDeck.lower_bound(low);
         return (note != noteDeck.end() && note->first < high);
     }
 
