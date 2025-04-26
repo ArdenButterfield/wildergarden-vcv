@@ -1,58 +1,93 @@
 #include "plugin.hpp"
+#include <vector>
+#include <map>
+#include <array>
+#include <cmath>
+#include <iterator>
+#include <iostream>
 
 #define NUM_SESSIONS 4
 #define NUM_CHANNELS 8
 
+struct Hit {
+    int channel;
+    float position;
+    float velocity;
+};
+
+struct Track {
+    std::map<float, Note> noteDeck;
+    std::array<dsp::SchmittTrigger, NUM_CHANNELS> gateTriggers;
+
+    void clearAll() {
+        noteDeck.clear();
+    }
+
+
+    void process(bool record, bool clear, float position,
+                 std::array<float, NUM_CHANNELS>& inputs,
+                 std::array<float, NUM_CHANNELS>& outputs) {
+        if (record) {
+            for (auto channel = 0; channel < NUM_CHANNELS; ++channel) {
+                auto hit = gateTriggers[channel].process(inputs[channel]);
+                if (hit) {
+                    noteDeck[position] = // TODO... handle multiple channels-- maybe some kinda bit mask?
+                }
+            }
+        }
+    }
+};
+
 struct SeekDrum : Module {
-	enum ParamId {
-		BIPOLAR_UNIPOLAR_PARAM,
-		RECORD_PARAM,
-		CLEAR_MODE_PARAM,
-		SELECT_PARAM,
-		PARAMS_LEN
-	};
-	enum InputId {
-		PREV_SESSION_INPUT,
-		NEXT_SESSION_INPUT,
-		POSITION_INPUT,
-		RECORD_INPUT,
-		CLEAR_INPUT,
-		SELECT_CV_INPUT,
+    enum ParamId {
+        BIPOLAR_UNIPOLAR_PARAM,
+        RECORD_PARAM,
+        CLEAR_MODE_PARAM,
+        SELECT_PARAM,
+        PARAMS_LEN
+    };
+    enum InputId {
+        PREV_SESSION_INPUT,
+        NEXT_SESSION_INPUT,
+        POSITION_INPUT,
+        RECORD_INPUT,
+        CLEAR_INPUT,
+        SELECT_CV_INPUT,
         ENUMS(CHANNEL_TRIGGER_INPUT, NUM_CHANNELS),
-		INPUTS_LEN
-	};
-	enum OutputId {
+        INPUTS_LEN
+    };
+    enum OutputId {
         ENUMS(CHANNEL_TRIGGER_OUTPUT, NUM_CHANNELS),
-		OUTPUTS_LEN
-	};
-	enum LightId {
+        OUTPUTS_LEN
+    };
+    enum LightId {
         ENUMS(INPUT_TRIGGER_INDICATOR, NUM_CHANNELS),
         ENUMS(OUTPUT_TRIGGER_INDICATOR, NUM_CHANNELS),
         ENUMS(SESSION_INDICATOR, NUM_SESSIONS),
         ENUMS(VISUALIZER, NUM_SESSIONS * 8 * 3),
         LIGHTS_LEN
-	};
+    };
 
-	SeekDrum() {
-		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
-		configParam(BIPOLAR_UNIPOLAR_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(RECORD_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(CLEAR_MODE_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(SELECT_PARAM, 0.f, 1.f, 0.f, "");
-		configInput(PREV_SESSION_INPUT, "");
-		configInput(NEXT_SESSION_INPUT, "");
-		configInput(POSITION_INPUT, "");
-		configInput(RECORD_INPUT, "");
-		configInput(CLEAR_INPUT, "");
-		configInput(SELECT_CV_INPUT, "");
+    SeekDrum() {
+        config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
+        configParam(BIPOLAR_UNIPOLAR_PARAM, 0.f, 1.f, 0.f, "");
+        configParam(RECORD_PARAM, 0.f, 1.f, 0.f, "");
+        configParam(CLEAR_MODE_PARAM, 0.f, 1.f, 0.f, "");
+        configParam(SELECT_PARAM, 0.f, 1.f, 0.f, "");
+        configInput(PREV_SESSION_INPUT, "");
+        configInput(NEXT_SESSION_INPUT, "");
+        configInput(POSITION_INPUT, "");
+        configInput(RECORD_INPUT, "");
+        configInput(CLEAR_INPUT, "");
+        configInput(SELECT_CV_INPUT, "");
         for (auto i = 0; i < NUM_CHANNELS; ++i) {
             configInput(CHANNEL_TRIGGER_INPUT + i, "");
             configOutput(CHANNEL_TRIGGER_OUTPUT + i, "");
         }
-	}
+    }
 
-	void process(const ProcessArgs& args) override {
-	}
+    void process(const ProcessArgs& args) override {
+    }
 };
 
 
