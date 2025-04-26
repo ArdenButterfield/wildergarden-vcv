@@ -11,6 +11,7 @@ extern Model* modelPascal;
 extern Model* modelModmix;
 extern Model* modelSeek;
 extern Model* modelScrub;
+extern Model* modelSeekDrum;
 
 // Declare each Model, defined in each module source file
 // extern Model* modelMyModule;

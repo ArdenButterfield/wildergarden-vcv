@@ -11,7 +11,7 @@ void init(Plugin* p) {
     p->addModel(modelModmix);
     p->addModel(modelSeek);
     p->addModel(modelScrub);
-
+    p->addModel(modelSeekDrum);
     // Add modules here
 	// p->addModel(modelMyModule);
 

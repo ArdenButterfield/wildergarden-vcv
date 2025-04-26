@@ -289,7 +289,8 @@ struct SeekWidget : ModuleWidget {
 
 
         for (auto i = 0; i < NUM_SESSIONS; ++i) {
-            addChild(createLightCentered<MediumLight<BlueLight>>(mm2px(Vec(19.998, 28.508 + (i * 4.f) - 4.f * 1.5f)), module, Seek::SESSION_INDICATOR + i));
+            addChild(createLightCentered<MediumLight<BlueLight>>
+                (mm2px(Vec(19.998, 28.508 + (i * 4.f) - 4.f * 1.5f)), module, Seek::SESSION_INDICATOR + i));
         }
 
         const float centerX = 23.397 + 31.334 / 2;
@@ -298,7 +299,8 @@ struct SeekWidget : ModuleWidget {
             for (auto i = 0; i < 8; ++i) {
                 auto x = centerX + (i - 3.5f) * 4.f;
                 auto y = centerY + (row - 1.5f) * 4.f;
-                addChild(createLightCentered<MediumLight<RedGreenBlueLight>>(mm2px(Vec(x, y)), module, Seek::VISUALIZER + row * 8 * 3 + i * 3));
+                addChild(createLightCentered<MediumLight<RedGreenBlueLight>>
+                    (mm2px(Vec(x, y)), module, Seek::VISUALIZER + row * 8 * 3 + i * 3));
             }
         }
 

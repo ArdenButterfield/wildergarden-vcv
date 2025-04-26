@@ -54,6 +54,12 @@
       "name": "Scrub",
       "description": "",
       "tags": []
+    },
+    {
+      "slug": "SeekDrum",
+      "name": "SeekDrum",
+      "description": "",
+      "tags": []
     }
   ]
 }
