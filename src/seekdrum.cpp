@@ -5,167 +5,15 @@
 #include <cmath>
 #include <iterator>
 #include <iostream>
+#include "Seek/SeekDrumTrack.h"
 
 #define NUM_SESSIONS 4
 #define NUM_CHANNELS 8
 
-struct Hit {
-    Hit() {
-        for (auto& v : velocity) { v = 0; }
-    }
-    float position;
-    std::array<float, NUM_CHANNELS> velocity;
-
-    void addNote(int channel) {
-        velocity[channel] = 10.f;
-    }
-
-    bool hasNotes() {
-        for (auto v : velocity) {
-            if (v > 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    void mergeWith(const Hit& other) {
-        for (auto i = 0; i < NUM_CHANNELS; ++i) {
-            velocity[i] = std::max(velocity[i], other.velocity[i]);
-        }
-    }
-};
-
-struct Track {
-    enum MotionState {
-        FORWARD_MOTION,
-        BACKWARDS_MOTION,
-        WRAPAROUND_MOTION,
-        NO_MOTION,
-        JUMPING_MOTION
-    };
-
-    const float MOTION_EPSILON = 1.0f;
-
-    Track() : previousPosition(0), nextHit(hitDeck.end()) {
-
-    }
-    std::map<float, Hit> hitDeck;
-    std::array<dsp::SchmittTrigger, NUM_CHANNELS> gateTriggers;
-    float previousPosition;
-    std::map<float, Hit>::iterator nextHit;
-
-    void clearAll() {
-        hitDeck.clear();
-        previousPosition = 0;
-        nextHit = hitDeck.end();
-    }
-
-/*
-    std::map<float, Hit>::iterator getNextHit(bool goingForwards) {
-        if (previousHit == hitDeck.end()) {
-            return previousHit;
-        }
-        std::map<float, Hit>::iterator nextHit;
-        if (goingForwards) {
-            nextHit = std::next(previousHit);
-            if (nextHit == hitDeck.end()) {
-                nextHit = hitDeck.begin();
-            }
-            return nextHit;
-        } else {
-            if (previousHit == hitDeck.begin()) {
-                nextHit = std::prev(hitDeck.end());
-            } else {
-                nextHit = std::prev(previousHit);
-            }
-            return nextHit;
-        }
-    }
-*/
-
-    MotionState getMotion(float prev, float curr) {
-        auto diff = std::abs(prev - curr);
-        if ((diff < MOTION_EPSILON) && (prev > curr)) {
-            return BACKWARDS_MOTION;
-        } else if ((diff < MOTION_EPSILON) && (prev < curr)) {
-            return FORWARD_MOTION;
-        } else if (diff < MOTION_EPSILON) {
-            return NO_MOTION;
-        } else if (curr < MOTION_EPSILON) {
-            return WRAPAROUND_MOTION;
-        } else {
-            return JUMPING_MOTION;
-        }
-    }
-
-
-    void process(bool record, bool clear, float position,
-                 std::array<float, NUM_CHANNELS>& inputs,
-                 std::array<float, NUM_CHANNELS>& outputs) {
-        for (auto& o : outputs) { o = 0; }
-
-        if (hitDeck.begin() != hitDeck.end()) {
-            auto motion = getMotion(previousPosition, position);
-
-            if (motion == WRAPAROUND_MOTION) {
-                nextHit = hitDeck.begin();
-                motion = FORWARD_MOTION;
-            }
-
-            if (motion == JUMPING_MOTION) {
-                nextHit = hitDeck.lower_bound(position);
-            }
-
-            if (motion == FORWARD_MOTION) {
-                while ((nextHit != hitDeck.end()) && (nextHit->second.position <= position)) {
-                    for (auto i = 0; i < NUM_CHANNELS; ++i) {
-                        outputs[i] = std::max(outputs[i], nextHit->second.velocity[i]);
-                    }
-                    nextHit = std::next(nextHit);
-                }
-            }
-            if (motion == BACKWARDS_MOTION && !(nextHit == hitDeck.end() && std::prev(nextHit)->second.position < position)) {
-                while ((nextHit != hitDeck.begin() && nextHit->second.position >= previousPosition)) {
-                    nextHit = std::prev(nextHit);
-                }
-                while (nextHit->second.position >= position) {
-                    for (auto i = 0; i < NUM_CHANNELS; ++i) {
-                        outputs[i] = std::max(outputs[i], nextHit->second.velocity[i]);
-                    }
-                    if (nextHit == hitDeck.begin()) {
-                        break;
-                    } else {
-                        nextHit = std::prev(nextHit);
-                    }
-                }
-            }
-        }
-
-        if (record) {
-            auto hit = Hit();
-            hit.position = position;
-            bool notesAdded;
-            for (auto channel = 0; channel < NUM_CHANNELS; ++channel) {
-                auto hitInChannel = gateTriggers[channel].process(inputs[channel], 0.1f, 1.5f);
-                if (hitInChannel) {
-                    hit.addNote(channel);
-                    notesAdded = true;
-                }
-            }
-            if (notesAdded) {
-                auto hitAlready = hitDeck.find(position);
-                if (hitAlready != hitDeck.end()) {
-                    hit.mergeWith(hitAlready->second);
-                }
-                hitDeck[position] = hit;
-            }
-        }
-    }
-};
-
 struct SeekDrum : Module {
     enum ParamId {
+        PREV_SESSION_PARAM,
+        NEXT_SESSION_PARAM,
         BIPOLAR_UNIPOLAR_PARAM,
         RECORD_PARAM,
         CLEAR_MODE_PARAM,
@@ -194,12 +42,17 @@ struct SeekDrum : Module {
         LIGHTS_LEN
     };
 
-    Track track;
+    std::array<Track<NUM_CHANNELS>, NUM_SESSIONS> tracks;
+    std::array<Track<NUM_CHANNELS>, NUM_SESSIONS>::iterator currentTrack;
+
     std::array<float, NUM_CHANNELS> track_inputs{0.f};
     std::array<float, NUM_CHANNELS> track_outputs{0.f};
 
+
     dsp::SchmittTrigger recordTrigger;
     dsp::SchmittTrigger clearTrigger;
+    dsp::SchmittTrigger prevTrackTrigger;
+    dsp::SchmittTrigger nextTrackTrigger;
 
     SeekDrum() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
@@ -217,9 +70,25 @@ struct SeekDrum : Module {
             configInput(CHANNEL_TRIGGER_INPUT + i, "");
             configOutput(CHANNEL_TRIGGER_OUTPUT + i, "");
         }
+
+        currentTrack = tracks.begin();
     }
 
     void process(const ProcessArgs& args) override {
+        if (prevTrackTrigger.process(inputs[PREV_SESSION_INPUT].getVoltage()
+                                + params[PREV_SESSION_PARAM].getValue() * 10.f)) {
+            if (currentTrack == tracks.begin()) {
+                currentTrack = tracks.end();
+            }
+            currentTrack = std::prev(currentTrack);
+        }
+        if (nextTrackTrigger.process(inputs[NEXT_SESSION_INPUT].getVoltage() + params[NEXT_SESSION_PARAM].getValue() * 10.f)) {
+            currentTrack = std::next(currentTrack);
+            if (currentTrack == tracks.end()) {
+                currentTrack = tracks.begin();
+            }
+        }
+
         for (int channel = 0; channel < NUM_CHANNELS; ++channel) {
             auto in = inputs[CHANNEL_TRIGGER_INPUT + channel].getVoltage();
             lights[INPUT_TRIGGER_INDICATOR + channel].setBrightnessSmooth(std::max(0.f, in) * 0.1, args.sampleTime);
@@ -231,7 +100,7 @@ struct SeekDrum : Module {
 
         bool clearTriggerMode = (params[CLEAR_MODE_PARAM].getValue() > 0.5f);
         if (clearTriggerMode && clearGoingHigh) {
-            track.clearAll();
+            currentTrack->clearAll();
         }
 
         auto position = inputs[POSITION_INPUT].getVoltage();
@@ -239,12 +108,27 @@ struct SeekDrum : Module {
             position += 5.f;
         }
 
-        track.process(recordTrigger.isHigh(), clearTrigger.isHigh() && !clearTriggerMode, position, track_inputs, track_outputs);
+        currentTrack->process(recordTrigger.isHigh(), clearTrigger.isHigh() && !clearTriggerMode, position, track_inputs, track_outputs);
 
         for (auto i = 0; i < NUM_CHANNELS; ++i) {
             outputs[CHANNEL_TRIGGER_OUTPUT + i].setVoltage(track_outputs[i]);
             lights[OUTPUT_TRIGGER_INDICATOR + i].setBrightnessSmooth(track_outputs[i] * 0.1f, args.sampleTime);
         }
+
+        for (auto i = 0; i < NUM_SESSIONS; ++i) {
+            lights[SESSION_INDICATOR + i].setBrightnessSmooth((std::distance(tracks.begin(), currentTrack) == i) ? 1.f : 0.f, args.sampleTime);
+        }
+
+        int currentStep = std::floor(position * 0.8f);
+        int trackIndex = (std::distance(tracks.begin(), currentTrack));
+        for (auto t = 0; t < NUM_SESSIONS; ++t) {
+            for (auto pos = 0; pos < 8; ++pos) {
+                lights[VISUALIZER + ((t * 8) + pos) * 3 + 2].setBrightnessSmooth(tracks[t].overview[pos], args.sampleTime);
+                lights[VISUALIZER + ((t * 8) + pos) * 3].setBrightnessSmooth((t == trackIndex) && (currentStep == pos) ? 1.f : 0.f, args.sampleTime);
+
+            }
+        }
+
         /*process(bool record, bool clear, float position,
                 std::array<float, NUM_CHANNELS>& inputs,
                 std::array<float, NUM_CHANNELS>& outputs)*/
@@ -266,6 +150,10 @@ struct SeekDrumWidget : ModuleWidget {
 		addParam(createParamCentered<CKD6>(mm2px(Vec(37.886, 67.392)), module, SeekDrum::RECORD_PARAM));
 		addParam(createParamCentered<CKSS>(mm2px(Vec(32.227, 89.68)), module, SeekDrum::CLEAR_MODE_PARAM));
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(36.47, 108.66)), module, SeekDrum::SELECT_PARAM));
+        addParam(createParamCentered<VCVButton>(mm2px(Vec(6, 23.851)), module, SeekDrum::PREV_SESSION_PARAM));
+        addParam(createParamCentered<VCVButton>(mm2px(Vec(6, 32.497)), module, SeekDrum::NEXT_SESSION_PARAM));
+
+
 
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(13.664, 23.851)), module, SeekDrum::PREV_SESSION_INPUT));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(13.664, 32.497)), module, SeekDrum::NEXT_SESSION_INPUT));
