@@ -10,29 +10,155 @@
 #define NUM_CHANNELS 8
 
 struct Hit {
-    int channel;
+    Hit() {
+        for (auto& v : velocity) { v = 0; }
+    }
     float position;
-    float velocity;
+    std::array<float, NUM_CHANNELS> velocity;
+
+    void addNote(int channel) {
+        velocity[channel] = 10.f;
+    }
+
+    bool hasNotes() {
+        for (auto v : velocity) {
+            if (v > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void mergeWith(const Hit& other) {
+        for (auto i = 0; i < NUM_CHANNELS; ++i) {
+            velocity[i] = std::max(velocity[i], other.velocity[i]);
+        }
+    }
 };
 
 struct Track {
-    std::map<float, Note> noteDeck;
+    enum MotionState {
+        FORWARD_MOTION,
+        BACKWARDS_MOTION,
+        WRAPAROUND_MOTION,
+        NO_MOTION,
+        JUMPING_MOTION
+    };
+
+    const float MOTION_EPSILON = 1.0f;
+
+    Track() : previousPosition(0), nextHit(hitDeck.end()) {
+
+    }
+    std::map<float, Hit> hitDeck;
     std::array<dsp::SchmittTrigger, NUM_CHANNELS> gateTriggers;
+    float previousPosition;
+    std::map<float, Hit>::iterator nextHit;
 
     void clearAll() {
-        noteDeck.clear();
+        hitDeck.clear();
+        previousPosition = 0;
+        nextHit = hitDeck.end();
+    }
+
+/*
+    std::map<float, Hit>::iterator getNextHit(bool goingForwards) {
+        if (previousHit == hitDeck.end()) {
+            return previousHit;
+        }
+        std::map<float, Hit>::iterator nextHit;
+        if (goingForwards) {
+            nextHit = std::next(previousHit);
+            if (nextHit == hitDeck.end()) {
+                nextHit = hitDeck.begin();
+            }
+            return nextHit;
+        } else {
+            if (previousHit == hitDeck.begin()) {
+                nextHit = std::prev(hitDeck.end());
+            } else {
+                nextHit = std::prev(previousHit);
+            }
+            return nextHit;
+        }
+    }
+*/
+
+    MotionState getMotion(float prev, float curr) {
+        auto diff = std::abs(prev - curr);
+        if ((diff < MOTION_EPSILON) && (prev > curr)) {
+            return BACKWARDS_MOTION;
+        } else if ((diff < MOTION_EPSILON) && (prev < curr)) {
+            return FORWARD_MOTION;
+        } else if (diff < MOTION_EPSILON) {
+            return NO_MOTION;
+        } else if (curr < MOTION_EPSILON) {
+            return WRAPAROUND_MOTION;
+        } else {
+            return JUMPING_MOTION;
+        }
     }
 
 
     void process(bool record, bool clear, float position,
                  std::array<float, NUM_CHANNELS>& inputs,
                  std::array<float, NUM_CHANNELS>& outputs) {
-        if (record) {
-            for (auto channel = 0; channel < NUM_CHANNELS; ++channel) {
-                auto hit = gateTriggers[channel].process(inputs[channel]);
-                if (hit) {
-                    noteDeck[position] = // TODO... handle multiple channels-- maybe some kinda bit mask?
+        for (auto& o : outputs) { o = 0; }
+
+        if (hitDeck.begin() != hitDeck.end()) {
+            auto motion = getMotion(previousPosition, position);
+
+            if (motion == WRAPAROUND_MOTION) {
+                nextHit = hitDeck.begin();
+                motion = FORWARD_MOTION;
+            }
+
+            if (motion == JUMPING_MOTION) {
+                nextHit = hitDeck.lower_bound(position);
+            }
+
+            if (motion == FORWARD_MOTION) {
+                while ((nextHit != hitDeck.end()) && (nextHit->second.position <= position)) {
+                    for (auto i = 0; i < NUM_CHANNELS; ++i) {
+                        outputs[i] = std::max(outputs[i], nextHit->second.velocity[i]);
+                    }
+                    nextHit = std::next(nextHit);
                 }
+            }
+            if (motion == BACKWARDS_MOTION && !(nextHit == hitDeck.end() && std::prev(nextHit)->second.position < position)) {
+                while ((nextHit != hitDeck.begin() && nextHit->second.position >= previousPosition)) {
+                    nextHit = std::prev(nextHit);
+                }
+                while (nextHit->second.position >= position) {
+                    for (auto i = 0; i < NUM_CHANNELS; ++i) {
+                        outputs[i] = std::max(outputs[i], nextHit->second.velocity[i]);
+                    }
+                    if (nextHit == hitDeck.begin()) {
+                        break;
+                    } else {
+                        nextHit = std::prev(nextHit);
+                    }
+                }
+            }
+        }
+
+        if (record) {
+            auto hit = Hit();
+            hit.position = position;
+            bool notesAdded;
+            for (auto channel = 0; channel < NUM_CHANNELS; ++channel) {
+                auto hitInChannel = gateTriggers[channel].process(inputs[channel], 0.1f, 1.5f);
+                if (hitInChannel) {
+                    hit.addNote(channel);
+                    notesAdded = true;
+                }
+            }
+            if (notesAdded) {
+                auto hitAlready = hitDeck.find(position);
+                if (hitAlready != hitDeck.end()) {
+                    hit.mergeWith(hitAlready->second);
+                }
+                hitDeck[position] = hit;
             }
         }
     }
@@ -68,6 +194,13 @@ struct SeekDrum : Module {
         LIGHTS_LEN
     };
 
+    Track track;
+    std::array<float, NUM_CHANNELS> track_inputs{0.f};
+    std::array<float, NUM_CHANNELS> track_outputs{0.f};
+
+    dsp::SchmittTrigger recordTrigger;
+    dsp::SchmittTrigger clearTrigger;
+
     SeekDrum() {
         config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
         configParam(BIPOLAR_UNIPOLAR_PARAM, 0.f, 1.f, 0.f, "");
@@ -87,6 +220,34 @@ struct SeekDrum : Module {
     }
 
     void process(const ProcessArgs& args) override {
+        for (int channel = 0; channel < NUM_CHANNELS; ++channel) {
+            auto in = inputs[CHANNEL_TRIGGER_INPUT + channel].getVoltage();
+            lights[INPUT_TRIGGER_INDICATOR + channel].setBrightnessSmooth(std::max(0.f, in) * 0.1, args.sampleTime);
+            track_inputs[channel] = in;
+        }
+
+        recordTrigger.process(inputs[RECORD_INPUT].getVoltage() + (params[RECORD_PARAM].getValue() ? 10 : 0), 0.1f, 1.5f);
+        bool clearGoingHigh = clearTrigger.process(inputs[CLEAR_INPUT].getVoltage(), 0.1f, 1.5f);
+
+        bool clearTriggerMode = (params[CLEAR_MODE_PARAM].getValue() > 0.5f);
+        if (clearTriggerMode && clearGoingHigh) {
+            track.clearAll();
+        }
+
+        auto position = inputs[POSITION_INPUT].getVoltage();
+        if (params[BIPOLAR_UNIPOLAR_PARAM].getValue() < 0.5f) {
+            position += 5.f;
+        }
+
+        track.process(recordTrigger.isHigh(), clearTrigger.isHigh() && !clearTriggerMode, position, track_inputs, track_outputs);
+
+        for (auto i = 0; i < NUM_CHANNELS; ++i) {
+            outputs[CHANNEL_TRIGGER_OUTPUT + i].setVoltage(track_outputs[i]);
+            lights[OUTPUT_TRIGGER_INDICATOR + i].setBrightnessSmooth(track_outputs[i] * 0.1f, args.sampleTime);
+        }
+        /*process(bool record, bool clear, float position,
+                std::array<float, NUM_CHANNELS>& inputs,
+                std::array<float, NUM_CHANNELS>& outputs)*/
     }
 };
 
