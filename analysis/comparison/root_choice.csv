@@ -1,0 +1,7 @@
+method,converged samples with several roots (%),of those, root other than nearest to previous output (%)
+bisection,72.37,56.96
+fixed-point,55.52,9.452
+Newton,57.22,1.687
+Newton + bisection,55.09,0.759
+safeguarded Newton,57.75,4.667
+Illinois,61.4,29.68

@@ -1,0 +1,361 @@
+experiment,method,by,group,instances,not converged within 16 (%),not converged within 48 (%),mean iterations,mean transcendental calls
+sine,bisection,b0*g,0-0.25,1500,24.35,0,13.29,26.57
+sine,bisection,b0*g,0.25-0.5,290,99.12,0,18.9,37.8
+sine,bisection,b0*g,0.5-0.75,80,99.42,0,19.86,39.71
+sine,bisection,b0*g,0.75-1,175,97.95,0,19.72,39.45
+sine,bisection,b0*g,1-1.5,70,99.75,0,20.86,41.72
+sine,bisection,b0*g,1.5-2,165,99.79,0,20.93,41.86
+sine,bisection,b0*g,2-3,160,99.86,0,21.89,43.78
+sine,bisection,b0*g,3-4,145,99.9,0,21.93,43.87
+sine,bisection,b0*g,4-5.0001,115,99.84,0,22.82,45.64
+sine,bisection,shape,0.0,540,57.23,0,16.47,32.94
+sine,bisection,shape,0.25,540,57.76,0,16.56,33.11
+sine,bisection,shape,0.5,540,57.49,0,16.52,33.05
+sine,bisection,shape,0.75,540,57.81,0,16.57,33.15
+sine,bisection,shape,1.0,540,58.15,0,16.6,33.2
+sine,bisection,mode,lowpass,900,32.79,0,13.26,26.51
+sine,bisection,mode,bandpass,900,44.23,0,15.83,31.66
+sine,bisection,mode,highpass,900,96.05,0,20.55,41.09
+sine,bisection,Q,0.70710678,900,64.23,0,17.01,34.02
+sine,bisection,Q,2.0,900,58.83,0,16.61,33.23
+sine,bisection,Q,8.0,900,50,0,16.01,32.02
+sine,fixed-point,b0*g,0-0.25,1500,0,0,3.015,6.031
+sine,fixed-point,b0*g,0.25-0.5,290,0.2317,0,5.942,11.88
+sine,fixed-point,b0*g,0.5-0.75,80,18.91,0,9.324,18.65
+sine,fixed-point,b0*g,0.75-1,175,37.88,15.7,18.06,36.13
+sine,fixed-point,b0*g,1-1.5,70,42.67,22.54,20.18,40.35
+sine,fixed-point,b0*g,1.5-2,165,61.99,49.67,29.96,59.92
+sine,fixed-point,b0*g,2-3,160,71.74,65.94,34.71,69.42
+sine,fixed-point,b0*g,3-4,145,69.11,63.08,33.41,66.82
+sine,fixed-point,b0*g,4-5.0001,115,73.58,69.41,35.49,70.98
+sine,fixed-point,shape,0.0,540,4.018,1.613,4.803,9.607
+sine,fixed-point,shape,0.25,540,20.08,14.47,12.01,24.01
+sine,fixed-point,shape,0.5,540,25.47,19.63,14.54,29.08
+sine,fixed-point,shape,0.75,540,23.96,19.2,13.9,27.79
+sine,fixed-point,shape,1.0,540,21.63,19.53,12.14,24.28
+sine,fixed-point,mode,lowpass,900,7.614,5.619,6.246,12.49
+sine,fixed-point,mode,bandpass,900,3.996,1.607,5.032,10.06
+sine,fixed-point,mode,highpass,900,45.48,37.44,23.15,46.31
+sine,fixed-point,Q,0.70710678,900,19.69,14.19,11.67,23.35
+sine,fixed-point,Q,2.0,900,18.29,14.42,11.27,22.53
+sine,fixed-point,Q,8.0,900,19.11,16.06,11.49,22.99
+sine,Newton,b0*g,0-0.25,1500,0,0,2.26,6.779
+sine,Newton,b0*g,0.25-0.5,290,0,0,2.606,7.818
+sine,Newton,b0*g,0.5-0.75,80,0.002867,0.001433,3.36,10.08
+sine,Newton,b0*g,0.75-1,175,1.587,1.278,3.692,11.08
+sine,Newton,b0*g,1-1.5,70,11.65,7.009,8.233,24.7
+sine,Newton,b0*g,1.5-2,165,9.864,5.734,7.252,21.75
+sine,Newton,b0*g,2-3,160,10.71,7.302,7.636,22.91
+sine,Newton,b0*g,3-4,145,9.488,6.629,7.107,21.32
+sine,Newton,b0*g,4-5.0001,115,7.221,4.97,6.028,18.09
+sine,Newton,shape,0.0,540,1.603,1.232,3.309,9.927
+sine,Newton,shape,0.25,540,2.61,1.397,3.754,11.26
+sine,Newton,shape,0.5,540,3.177,2.161,4.076,12.23
+sine,Newton,shape,0.75,540,3.112,2.047,3.965,11.89
+sine,Newton,shape,1.0,540,1.795,1.24,3.005,9.014
+sine,Newton,mode,lowpass,900,0.0985,0.06957,2.234,6.703
+sine,Newton,mode,bandpass,900,0.6449,0.3858,2.907,8.72
+sine,Newton,mode,highpass,900,6.635,4.391,5.724,17.17
+sine,Newton,Q,0.70710678,900,3.082,1.931,3.908,11.72
+sine,Newton,Q,2.0,900,1.904,1.277,3.399,10.2
+sine,Newton,Q,8.0,900,2.393,1.638,3.558,10.67
+sine,Newton + bisection,b0*g,0-0.25,1500,0,0,2.26,6.779
+sine,Newton + bisection,b0*g,0.25-0.5,290,0,0,2.606,7.818
+sine,Newton + bisection,b0*g,0.5-0.75,80,0.1132,0,3.376,10.13
+sine,Newton + bisection,b0*g,0.75-1,175,2.723,1.078,3.817,11.45
+sine,Newton + bisection,b0*g,1-1.5,70,18.8,2.123,8.811,26.43
+sine,Newton + bisection,b0*g,1.5-2,165,9.901,2.196,6.739,20.22
+sine,Newton + bisection,b0*g,2-3,160,10.34,2.472,6.706,20.12
+sine,Newton + bisection,b0*g,3-4,145,7.829,2.575,5.967,17.9
+sine,Newton + bisection,b0*g,4-5.0001,115,6.391,2.732,5.417,16.25
+sine,Newton + bisection,shape,0.0,540,1.577,1.212,3.299,9.896
+sine,Newton + bisection,shape,0.25,540,2.916,0.4574,3.641,10.92
+sine,Newton + bisection,shape,0.5,540,3.467,0.6433,3.825,11.48
+sine,Newton + bisection,shape,0.75,540,3.151,0.5367,3.69,11.07
+sine,Newton + bisection,shape,1.0,540,1.778,0.4519,2.902,8.705
+sine,Newton + bisection,mode,lowpass,900,0.06333,0.006626,2.209,6.628
+sine,Newton + bisection,mode,bandpass,900,0.86,0.1404,2.898,8.694
+sine,Newton + bisection,mode,highpass,900,6.81,1.834,5.307,15.92
+sine,Newton + bisection,Q,0.70710678,900,3.15,0.8439,3.729,11.19
+sine,Newton + bisection,Q,2.0,900,1.969,0.4848,3.253,9.758
+sine,Newton + bisection,Q,8.0,900,2.614,0.6521,3.432,10.3
+sine,safeguarded Newton,b0*g,0-0.25,1500,0.06636,0,2.424,7.272
+sine,safeguarded Newton,b0*g,0.25-0.5,290,0.3875,0,2.681,8.042
+sine,safeguarded Newton,b0*g,0.5-0.75,80,2.511,0,3.809,11.43
+sine,safeguarded Newton,b0*g,0.75-1,175,0.9902,0,3.2,9.601
+sine,safeguarded Newton,b0*g,1-1.5,70,6.027,0,5.413,16.24
+sine,safeguarded Newton,b0*g,1.5-2,165,5.815,0,5.013,15.04
+sine,safeguarded Newton,b0*g,2-3,160,6.99,0,5.226,15.68
+sine,safeguarded Newton,b0*g,3-4,145,6.598,0,5.264,15.79
+sine,safeguarded Newton,b0*g,4-5.0001,115,5.144,0,4.974,14.92
+sine,safeguarded Newton,shape,0.0,540,0.1491,0,2.82,8.459
+sine,safeguarded Newton,shape,0.25,540,1.953,0,3.409,10.23
+sine,safeguarded Newton,shape,0.5,540,2.682,0,3.569,10.71
+sine,safeguarded Newton,shape,0.75,540,2.514,0,3.482,10.45
+sine,safeguarded Newton,shape,1.0,540,1.284,0,2.75,8.251
+sine,safeguarded Newton,mode,lowpass,900,0.7039,0,2.633,7.9
+sine,safeguarded Newton,mode,bandpass,900,0.5786,0,2.806,8.418
+sine,safeguarded Newton,mode,highpass,900,3.866,0,4.178,12.54
+sine,safeguarded Newton,Q,0.70710678,900,1.919,0,3.295,9.886
+sine,safeguarded Newton,Q,2.0,900,1.568,0,3.15,9.45
+sine,safeguarded Newton,Q,8.0,900,1.661,0,3.172,9.517
+sine,Illinois,b0*g,0-0.25,1500,0,0,4.769,9.539
+sine,Illinois,b0*g,0.25-0.5,290,0,0,5.983,11.97
+sine,Illinois,b0*g,0.5-0.75,80,0,0,6.55,13.1
+sine,Illinois,b0*g,0.75-1,175,0.007208,0,7.39,14.78
+sine,Illinois,b0*g,1-1.5,70,0.01638,0,7.453,14.91
+sine,Illinois,b0*g,1.5-2,165,0.2537,0,8.911,17.82
+sine,Illinois,b0*g,2-3,160,1.919,0,8.858,17.72
+sine,Illinois,b0*g,3-4,145,0.5884,0,8.578,17.16
+sine,Illinois,b0*g,4-5.0001,115,0.02992,0,8.329,16.66
+sine,Illinois,shape,0.0,540,0.002761,0,5.699,11.4
+sine,Illinois,shape,0.25,540,0.04417,0,6.218,12.44
+sine,Illinois,shape,0.5,540,0.3228,0,6.365,12.73
+sine,Illinois,shape,0.75,540,0.2905,0,6.208,12.42
+sine,Illinois,shape,1.0,540,0.1548,0,5.727,11.45
+sine,Illinois,mode,lowpass,900,0.002803,0,5.021,10.04
+sine,Illinois,mode,bandpass,900,0.001402,0,5.356,10.71
+sine,Illinois,mode,highpass,900,0.4848,0,7.753,15.51
+sine,Illinois,Q,0.70710678,900,0.2029,0,6.235,12.47
+sine,Illinois,Q,2.0,900,0.1899,0,6.049,12.1
+sine,Illinois,Q,8.0,900,0.09633,0,5.846,11.69
+noise,bisection,b0*g,0-0.25,1500,24.45,0,13.3,26.6
+noise,bisection,b0*g,0.25-0.5,290,99.17,0,18.92,37.83
+noise,bisection,b0*g,0.5-0.75,80,99.41,0,19.85,39.71
+noise,bisection,b0*g,0.75-1,175,99.58,0,19.93,39.87
+noise,bisection,b0*g,1-1.5,70,99.7,0,20.84,41.68
+noise,bisection,b0*g,1.5-2,165,99.85,0,20.95,41.89
+noise,bisection,b0*g,2-3,160,99.89,0,21.88,43.76
+noise,bisection,b0*g,3-4,145,99.9,0,21.94,43.88
+noise,bisection,b0*g,4-5.0001,115,99.92,0,22.84,45.69
+noise,bisection,shape,0.0,540,57.49,0,16.52,33.03
+noise,bisection,shape,0.25,540,57.84,0,16.57,33.13
+noise,bisection,shape,0.5,540,57.88,0,16.58,33.16
+noise,bisection,shape,0.75,540,57.9,0,16.58,33.16
+noise,bisection,shape,1.0,540,58.19,0,16.6,33.21
+noise,bisection,mode,lowpass,900,32.83,0,13.27,26.54
+noise,bisection,mode,bandpass,900,44.22,0,15.84,31.69
+noise,bisection,mode,highpass,900,96.53,0,20.59,41.19
+noise,bisection,Q,0.70710678,900,64.29,0,17.03,34.07
+noise,bisection,Q,2.0,900,58.89,0,16.63,33.27
+noise,bisection,Q,8.0,900,50.41,0,16.04,32.08
+noise,fixed-point,b0*g,0-0.25,1500,0,0,3.466,6.932
+noise,fixed-point,b0*g,0.25-0.5,290,5.249,0,9.24,18.48
+noise,fixed-point,b0*g,0.5-0.75,80,25.95,0,12,24.01
+noise,fixed-point,b0*g,0.75-1,175,36.25,9.577,17.66,35.32
+noise,fixed-point,b0*g,1-1.5,70,54.85,30.14,24.49,48.97
+noise,fixed-point,b0*g,1.5-2,165,65.48,49.37,30.98,61.96
+noise,fixed-point,b0*g,2-3,160,72.86,65.99,35.12,70.24
+noise,fixed-point,b0*g,3-4,145,73.77,67.64,35.46,70.92
+noise,fixed-point,b0*g,4-5.0001,115,77.56,74.99,37.45,74.91
+noise,fixed-point,shape,0.0,540,3.018,0.3249,4.832,9.664
+noise,fixed-point,shape,0.25,540,22.09,15.02,13.19,26.37
+noise,fixed-point,shape,0.5,540,25.92,19.67,15.03,30.06
+noise,fixed-point,shape,0.75,540,26.51,20.01,15.07,30.13
+noise,fixed-point,shape,1.0,540,25.9,20.76,14.52,29.04
+noise,fixed-point,mode,lowpass,900,9.261,6.087,7.108,14.22
+noise,fixed-point,mode,bandpass,900,4.287,1.71,5.641,11.28
+noise,fixed-point,mode,highpass,900,48.52,37.67,24.83,49.66
+noise,fixed-point,Q,0.70710678,900,21.63,15.03,12.98,25.95
+noise,fixed-point,Q,2.0,900,20.26,14.81,12.42,24.85
+noise,fixed-point,Q,8.0,900,20.17,15.63,12.18,24.37
+noise,Newton,b0*g,0-0.25,1500,0,0,2.54,7.619
+noise,Newton,b0*g,0.25-0.5,290,0,0,4.025,12.07
+noise,Newton,b0*g,0.5-0.75,80,0.08314,0.01003,4.333,13
+noise,Newton,b0*g,0.75-1,175,3.035,1.045,6.223,18.67
+noise,Newton,b0*g,1-1.5,70,15.4,9.279,10.48,31.44
+noise,Newton,b0*g,1.5-2,165,16.21,9.892,10.57,31.71
+noise,Newton,b0*g,2-3,160,12.22,8.367,8.794,26.38
+noise,Newton,b0*g,3-4,145,9.486,6.56,7.516,22.55
+noise,Newton,b0*g,4-5.0001,115,6.953,4.747,6.337,19.01
+noise,Newton,shape,0.0,540,2.082,1.639,4.012,12.04
+noise,Newton,shape,0.25,540,3.127,1.621,4.52,13.56
+noise,Newton,shape,0.5,540,4.074,2.529,4.949,14.85
+noise,Newton,shape,0.75,540,3.637,2.289,4.755,14.26
+noise,Newton,shape,1.0,540,2.671,1.74,4.201,12.6
+noise,Newton,mode,lowpass,900,0.3949,0.2379,2.773,8.318
+noise,Newton,mode,bandpass,900,0.7811,0.4838,3.25,9.75
+noise,Newton,mode,highpass,900,8.179,5.168,7.44,22.32
+noise,Newton,Q,0.70710678,900,3.836,2.4,4.84,14.52
+noise,Newton,Q,2.0,900,2.588,1.617,4.281,12.84
+noise,Newton,Q,8.0,900,2.931,1.873,4.342,13.03
+noise,Newton + bisection,b0*g,0-0.25,1500,0,0,2.54,7.619
+noise,Newton + bisection,b0*g,0.25-0.5,290,0,0,4.025,12.07
+noise,Newton + bisection,b0*g,0.5-0.75,80,0.6551,0,4.411,13.23
+noise,Newton + bisection,b0*g,0.75-1,175,7.229,0.01114,6.593,19.78
+noise,Newton + bisection,b0*g,1-1.5,70,20.03,2.797,10.16,30.49
+noise,Newton + bisection,b0*g,1.5-2,165,16.96,4.712,9.863,29.59
+noise,Newton + bisection,b0*g,2-3,160,11.59,3.047,7.746,23.24
+noise,Newton + bisection,b0*g,3-4,145,8.345,2.7,6.581,19.74
+noise,Newton + bisection,b0*g,4-5.0001,115,6.36,2.56,5.806,17.42
+noise,Newton + bisection,shape,0.0,540,2.124,1.641,4.022,12.07
+noise,Newton + bisection,shape,0.25,540,3.807,0.6246,4.468,13.4
+noise,Newton + bisection,shape,0.5,540,4.612,0.6152,4.675,14.02
+noise,Newton + bisection,shape,0.75,540,4.007,0.5851,4.498,13.49
+noise,Newton + bisection,shape,1.0,540,2.697,0.5127,3.973,11.92
+noise,Newton + bisection,mode,lowpass,900,0.5031,0.0962,2.764,8.293
+noise,Newton + bisection,mode,bandpass,900,1.004,0.2301,3.238,9.713
+noise,Newton + bisection,mode,highpass,900,8.841,2.061,6.98,20.94
+noise,Newton + bisection,Q,0.70710678,900,4.254,1.073,4.666,14
+noise,Newton + bisection,Q,2.0,900,2.774,0.6413,4.112,12.34
+noise,Newton + bisection,Q,8.0,900,3.32,0.6732,4.204,12.61
+noise,safeguarded Newton,b0*g,0-0.25,1500,0.1468,0,2.733,8.2
+noise,safeguarded Newton,b0*g,0.25-0.5,290,1.619,0,4.359,13.08
+noise,safeguarded Newton,b0*g,0.5-0.75,80,2.731,0,4.675,14.03
+noise,safeguarded Newton,b0*g,0.75-1,175,2.976,0,5.587,16.76
+noise,safeguarded Newton,b0*g,1-1.5,70,7.125,0,6.239,18.72
+noise,safeguarded Newton,b0*g,1.5-2,165,6.838,0,5.985,17.96
+noise,safeguarded Newton,b0*g,2-3,160,7.667,0,5.916,17.75
+noise,safeguarded Newton,b0*g,3-4,145,7.849,0,5.924,17.77
+noise,safeguarded Newton,b0*g,4-5.0001,115,6.906,0,5.728,17.19
+noise,safeguarded Newton,shape,0.0,540,0.3207,0,3.341,10.02
+noise,safeguarded Newton,shape,0.25,540,2.509,0,4.088,12.26
+noise,safeguarded Newton,shape,0.5,540,3.339,0,4.285,12.86
+noise,safeguarded Newton,shape,0.75,540,3.264,0,4.207,12.62
+noise,safeguarded Newton,shape,1.0,540,2.076,0,3.717,11.15
+noise,safeguarded Newton,mode,lowpass,900,1.201,0,3.136,9.407
+noise,safeguarded Newton,mode,bandpass,900,0.7088,0,3.124,9.373
+noise,safeguarded Newton,mode,highpass,900,4.996,0,5.523,16.57
+noise,safeguarded Newton,Q,0.70710678,900,2.483,0,4.048,12.15
+noise,safeguarded Newton,Q,2.0,900,2.16,0,3.902,11.71
+noise,safeguarded Newton,Q,8.0,900,2.262,0,3.832,11.5
+noise,Illinois,b0*g,0-0.25,1500,0,0,4.959,9.919
+noise,Illinois,b0*g,0.25-0.5,290,0,0,7.138,14.28
+noise,Illinois,b0*g,0.5-0.75,80,0,0,7.297,14.59
+noise,Illinois,b0*g,0.75-1,175,0.002621,0,8.254,16.51
+noise,Illinois,b0*g,1-1.5,70,0,0,8.111,16.22
+noise,Illinois,b0*g,1.5-2,165,0.08757,0,8.998,18
+noise,Illinois,b0*g,2-3,160,0.4515,0,9.047,18.09
+noise,Illinois,b0*g,3-4,145,0.1574,0,9.023,18.05
+noise,Illinois,b0*g,4-5.0001,115,0.01296,0,8.745,17.49
+noise,Illinois,shape,0.0,540,0.0002124,0,5.738,11.48
+noise,Illinois,shape,0.25,540,0.02931,0,6.674,13.35
+noise,Illinois,shape,0.5,540,0.06859,0,6.653,13.31
+noise,Illinois,shape,0.75,540,0.05946,0,6.622,13.24
+noise,Illinois,shape,1.0,540,0.04884,0,6.445,12.89
+noise,Illinois,mode,lowpass,900,0.006881,0,5.356,10.71
+noise,Illinois,mode,bandpass,900,0.001147,0,5.581,11.16
+noise,Illinois,mode,highpass,900,0.1158,0,8.342,16.68
+noise,Illinois,Q,0.70710678,900,0.03886,0,6.607,13.21
+noise,Illinois,Q,2.0,900,0.04192,0,6.434,12.87
+noise,Illinois,Q,8.0,900,0.04307,0,6.238,12.48
+cold start,bisection,b0*g,0-0.25,1500,23.89,0,13.22,26.45
+cold start,bisection,b0*g,0.25-0.5,290,98.59,0,18.86,37.73
+cold start,bisection,b0*g,0.5-0.75,80,99.04,0,19.8,39.59
+cold start,bisection,b0*g,0.75-1,175,99.38,0,19.9,39.8
+cold start,bisection,b0*g,1-1.5,70,99.56,0,20.79,41.59
+cold start,bisection,b0*g,1.5-2,165,99.73,0,20.91,41.83
+cold start,bisection,b0*g,2-3,160,99.81,0,21.83,43.66
+cold start,bisection,b0*g,3-4,145,99.92,0,21.94,43.88
+cold start,bisection,b0*g,4-5.0001,115,99.95,0,22.79,45.58
+cold start,bisection,shape,0.0,540,57.3,0,16.47,32.94
+cold start,bisection,shape,0.25,540,57.38,0,16.49,32.98
+cold start,bisection,shape,0.5,540,57.55,0,16.53,33.06
+cold start,bisection,shape,0.75,540,57.52,0,16.53,33.06
+cold start,bisection,shape,1.0,540,57.51,0,16.53,33.06
+cold start,bisection,mode,lowpass,900,32.65,0,13.21,26.42
+cold start,bisection,mode,bandpass,900,43.44,0,15.76,31.52
+cold start,bisection,mode,highpass,900,96.28,0,20.55,41.11
+cold start,bisection,Q,0.70710678,900,63.78,0,16.97,33.93
+cold start,bisection,Q,2.0,900,58.41,0,16.58,33.16
+cold start,bisection,Q,8.0,900,50.16,0,15.98,31.96
+cold start,fixed-point,b0*g,0-0.25,1500,0,0,4.18,8.359
+cold start,fixed-point,b0*g,0.25-0.5,290,8.597,0,9.595,19.19
+cold start,fixed-point,b0*g,0.5-0.75,80,34,0,13.99,27.98
+cold start,fixed-point,b0*g,0.75-1,175,50.47,25.49,23.32,46.63
+cold start,fixed-point,b0*g,1-1.5,70,62.13,39.7,27.93,55.87
+cold start,fixed-point,b0*g,1.5-2,165,72.55,62.61,34.74,69.49
+cold start,fixed-point,b0*g,2-3,160,75.12,68.82,36.2,72.4
+cold start,fixed-point,b0*g,3-4,145,74.64,68.49,35.98,71.96
+cold start,fixed-point,b0*g,4-5.0001,115,77.2,73.84,37.43,74.86
+cold start,fixed-point,shape,0.0,540,1.267,0.1079,4.356,8.712
+cold start,fixed-point,shape,0.25,540,22.54,16.05,13.66,27.32
+cold start,fixed-point,shape,0.5,540,31.15,24.2,17.3,34.6
+cold start,fixed-point,shape,0.75,540,30.67,23.83,17.11,34.21
+cold start,fixed-point,shape,1.0,540,29.35,22.85,16.57,33.13
+cold start,fixed-point,mode,lowpass,900,9.55,6.501,7.812,15.62
+cold start,fixed-point,mode,bandpass,900,5.903,2.566,6.904,13.81
+cold start,fixed-point,mode,highpass,900,53.53,43.16,26.68,53.35
+cold start,fixed-point,Q,0.70710678,900,24.64,17.86,14.51,29.02
+cold start,fixed-point,Q,2.0,900,22.55,17.01,13.67,27.35
+cold start,fixed-point,Q,8.0,900,21.8,17.36,13.21,26.42
+cold start,Newton,b0*g,0-0.25,1500,0,0,3.36,10.08
+cold start,Newton,b0*g,0.25-0.5,290,0.04914,0.04224,4.604,13.81
+cold start,Newton,b0*g,0.5-0.75,80,0.5437,0.125,5.288,15.86
+cold start,Newton,b0*g,0.75-1,175,10.72,4.254,9.047,27.14
+cold start,Newton,b0*g,1-1.5,70,25.72,15.71,14.79,44.38
+cold start,Newton,b0*g,1.5-2,165,33.87,21.97,17.83,53.48
+cold start,Newton,b0*g,2-3,160,32.94,22.75,17.53,52.59
+cold start,Newton,b0*g,3-4,145,24.37,16.58,14.14,42.42
+cold start,Newton,b0*g,4-5.0001,115,17.31,11.32,11.21,33.62
+cold start,Newton,shape,0.0,540,3.863,3.139,5.302,15.91
+cold start,Newton,shape,0.25,540,6.621,3.549,6.478,19.44
+cold start,Newton,shape,0.5,540,8.944,5.693,7.476,22.43
+cold start,Newton,shape,0.75,540,8.696,5.562,7.402,22.21
+cold start,Newton,shape,1.0,540,9.131,5.829,7.604,22.81
+cold start,Newton,mode,lowpass,900,3.087,1.901,4.714,14.14
+cold start,Newton,mode,bandpass,900,1.388,0.7767,4.275,12.83
+cold start,Newton,mode,highpass,900,17.88,11.59,11.57,34.71
+cold start,Newton,Q,0.70710678,900,8.067,5.091,7.194,21.58
+cold start,Newton,Q,2.0,900,7.115,4.539,6.734,20.2
+cold start,Newton,Q,8.0,900,7.172,4.634,6.629,19.89
+cold start,Newton + bisection,b0*g,0-0.25,1500,0,0,3.36,10.08
+cold start,Newton + bisection,b0*g,0.25-0.5,290,0.04914,0.00431,4.595,13.79
+cold start,Newton + bisection,b0*g,0.5-0.75,80,4.931,0,5.922,17.77
+cold start,Newton + bisection,b0*g,0.75-1,175,22.05,0.01,9.725,29.18
+cold start,Newton + bisection,b0*g,1-1.5,70,33.8,3.168,13.84,41.51
+cold start,Newton + bisection,b0*g,1.5-2,165,40.07,7.002,16.33,49
+cold start,Newton + bisection,b0*g,2-3,160,37.53,8.161,16.03,48.09
+cold start,Newton + bisection,b0*g,3-4,145,30.07,6.691,13.53,40.59
+cold start,Newton + bisection,b0*g,4-5.0001,115,24.07,5.559,11.31,33.93
+cold start,Newton + bisection,shape,0.0,540,4.263,3.139,5.372,16.12
+cold start,Newton + bisection,shape,0.25,540,9.443,1.018,6.552,19.65
+cold start,Newton + bisection,shape,0.5,540,11.36,1.35,7.12,21.36
+cold start,Newton + bisection,shape,0.75,540,11.49,1.267,7.084,21.25
+cold start,Newton + bisection,shape,1.0,540,12.3,1.181,7.277,21.83
+cold start,Newton + bisection,mode,lowpass,900,4.167,0.6064,4.665,13.99
+cold start,Newton + bisection,mode,bandpass,900,2.275,0.1736,4.302,12.91
+cold start,Newton + bisection,mode,highpass,900,22.87,3.993,11.08,33.23
+cold start,Newton + bisection,Q,0.70710678,900,10.71,1.657,7.027,21.08
+cold start,Newton + bisection,Q,2.0,900,9.377,1.54,6.582,19.75
+cold start,Newton + bisection,Q,8.0,900,9.218,1.575,6.434,19.3
+cold start,safeguarded Newton,b0*g,0-0.25,1500,0,0,2.944,8.833
+cold start,safeguarded Newton,b0*g,0.25-0.5,290,0,0,4.051,12.15
+cold start,safeguarded Newton,b0*g,0.5-0.75,80,0,0,4.453,13.36
+cold start,safeguarded Newton,b0*g,0.75-1,175,0,0,4.794,14.38
+cold start,safeguarded Newton,b0*g,1-1.5,70,3.45,0,5.965,17.89
+cold start,safeguarded Newton,b0*g,1.5-2,165,7.139,0,6.554,19.66
+cold start,safeguarded Newton,b0*g,2-3,160,7.295,0,6.581,19.74
+cold start,safeguarded Newton,b0*g,3-4,145,9.305,0,7.063,21.19
+cold start,safeguarded Newton,b0*g,4-5.0001,115,8.924,0,7.001,21
+cold start,safeguarded Newton,shape,0.0,540,0,0,3.867,11.6
+cold start,safeguarded Newton,shape,0.25,540,1.517,0,4.112,12.34
+cold start,safeguarded Newton,shape,0.5,540,2.715,0,4.285,12.86
+cold start,safeguarded Newton,shape,0.75,540,2.769,0,4.292,12.88
+cold start,safeguarded Newton,shape,1.0,540,2.188,0,4.124,12.37
+cold start,safeguarded Newton,mode,lowpass,900,0.6825,0,3.351,10.05
+cold start,safeguarded Newton,mode,bandpass,900,0.1856,0,3.361,10.08
+cold start,safeguarded Newton,mode,highpass,900,4.646,0,5.697,17.09
+cold start,safeguarded Newton,Q,0.70710678,900,1.846,0,4.252,12.76
+cold start,safeguarded Newton,Q,2.0,900,1.796,0,4.129,12.39
+cold start,safeguarded Newton,Q,8.0,900,1.872,0,4.028,12.08
+cold start,Illinois,b0*g,0-0.25,1500,0,0,4.974,9.949
+cold start,Illinois,b0*g,0.25-0.5,290,0,0,7.003,14.01
+cold start,Illinois,b0*g,0.5-0.75,80,0,0,7.269,14.54
+cold start,Illinois,b0*g,0.75-1,175,0,0,7.708,15.42
+cold start,Illinois,b0*g,1-1.5,70,0.01071,0,8.112,16.22
+cold start,Illinois,b0*g,1.5-2,165,0.02727,0,8.801,17.6
+cold start,Illinois,b0*g,2-3,160,0.5406,0,9.169,18.34
+cold start,Illinois,b0*g,3-4,145,0.3121,0,9.347,18.69
+cold start,Illinois,b0*g,4-5.0001,115,0.1935,0,9.562,19.12
+cold start,Illinois,shape,0.0,540,0,0,5.293,10.59
+cold start,Illinois,shape,0.25,540,0.08935,0,6.67,13.34
+cold start,Illinois,shape,0.5,540,0.0537,0,6.711,13.42
+cold start,Illinois,shape,0.75,540,0.0662,0,6.727,13.45
+cold start,Illinois,shape,1.0,540,0.08565,0,6.756,13.51
+cold start,Illinois,mode,lowpass,900,0.01778,0,5.409,10.82
+cold start,Illinois,mode,bandpass,900,0.0005556,0,5.605,11.21
+cold start,Illinois,mode,highpass,900,0.1586,0,8.28,16.56
+cold start,Illinois,Q,0.70710678,900,0.05861,0,6.584,13.17
+cold start,Illinois,Q,2.0,900,0.05556,0,6.445,12.89
+cold start,Illinois,Q,8.0,900,0.06278,0,6.266,12.53

@@ -1,0 +1,7 @@
+method,converged within 16 (%),converged within 48 (%),mean iterations,median iterations (converged),p99 iterations,max iterations (converged),mean transcendental calls
+bisection,42.14,100,16.57,18,23,23,33.14
+fixed-point,79.31,84.84,12.53,4,48,47,25.05
+Newton,96.88,98.04,4.487,3,48,47,13.46
+Newton + bisection,96.55,99.2,4.327,3,41,47,12.98
+safeguarded Newton,97.7,100,3.928,3,21,30,11.78
+Illinois,99.96,100,6.426,6,12,25,12.85
