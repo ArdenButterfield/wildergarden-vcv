@@ -22,6 +22,7 @@ target_sources(wildergarden
         ${SOURCE_DIR}/Pascal.cpp
         ${SOURCE_DIR}/plugin.cpp
         ${SOURCE_DIR}/modmix.cpp
+        ${SOURCE_DIR}/FilterDistort.cpp
 )
 
 target_include_directories(wildergarden

@@ -42,6 +42,15 @@
         "Utility",
         "Mixer"
       ]
+    },
+    {
+      "slug": "FilterDistort",
+      "name": "Filter Distort",
+      "description": "Multimode filter with feedback distortion",
+      "tags": [
+        "Filter",
+        "Distortion"
+      ]
     }
   ]
 }
