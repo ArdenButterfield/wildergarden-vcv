@@ -21,3 +21,8 @@ DISTRIBUTABLES += $(wildcard presets)
 
 # Include the Rack plugin Makefile framework
 include $(RACK_DIR)/plugin.mk
+
+# T-Stick module uses Winsock for OSC over UDP
+ifdef ARCH_WIN
+LDFLAGS += -lws2_32
+endif

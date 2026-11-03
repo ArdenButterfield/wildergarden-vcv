@@ -51,6 +51,15 @@
         "Filter",
         "Distortion"
       ]
+    },
+    {
+      "slug": "TStick",
+      "name": "T-Stick Interface",
+      "description": "Receives OSC from the T-Stick digital musical instrument and converts squeeze, touch and rotation into CV",
+      "tags": [
+        "Controller",
+        "External"
+      ]
     }
   ]
 }
