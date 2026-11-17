@@ -37,3 +37,4 @@ build
 .idea
 cmake-build-*
 metamodule/assets/*.png
+analysis/impulse_wavs/out*
