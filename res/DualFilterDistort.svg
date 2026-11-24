@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="60.96mm"
+   height="128.5mm"
+   viewBox="0 0 60.96 128.5"
+   version="1.1"
+   id="svg1"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <linearGradient
+       id="linearGradient1"
+       x1="30.48"
+       y1="6.1155901"
+       x2="30.48"
+       y2="116.52498"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         style="stop-color:#eee8d9;stop-opacity:1;"
+         offset="0"
+         id="stop1" />
+      <stop
+         style="stop-color:#d0d0d0;stop-opacity:1;"
+         offset="1"
+         id="stop2" />
+    </linearGradient>
+  </defs>
+  <g
+     id="layer1">
+    <rect
+       style="fill:url(#linearGradient1);stroke:none"
+       id="rect1"
+       width="60.96"
+       height="128.5"
+       x="0"
+       y="0" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="components"
+     inkscape:label="components"
+     style="display:none">
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="freq-1"
+       inkscape:label="freq-1"
+       cx="15.24"
+       cy="16"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="q-1"
+       inkscape:label="q-1"
+       cx="9"
+       cy="38"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="filter-mode-1"
+       inkscape:label="filter-mode-1"
+       cx="21.48"
+       cy="43.5"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="feedback-1"
+       inkscape:label="feedback-1"
+       cx="9"
+       cy="62"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="shape-1"
+       inkscape:label="shape-1"
+       cx="21.48"
+       cy="62"
+       r="1" />
+    <circle
+       style="fill:#00ff00;fill-opacity:1;stroke:none"
+       id="freq-cv-1"
+       inkscape:label="freq-cv-1"
+       cx="15.24"
+       cy="27"
+       r="1" />
+    <circle
+       style="fill:#00ff00;fill-opacity:1;stroke:none"
+       id="q-cv-1"
+       inkscape:label="q-cv-1"
+       cx="9"
+       cy="49"
+       r="1" />
+    <circle
+       style="fill:#00ff00;fill-opacity:1;stroke:none"
+       id="feedback-cv-1"
+       inkscape:label="feedback-cv-1"
+       cx="9"
+       cy="73"
+       r="1" />
+    <circle
+       style="fill:#00ff00;fill-opacity:1;stroke:none"
+       id="shape-cv-1"
+       inkscape:label="shape-cv-1"
+       cx="21.48"
+       cy="73"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="freq-2"
+       inkscape:label="freq-2"
+       cx="45.72"
+       cy="16"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="q-2"
+       inkscape:label="q-2"
+       cx="39.48"
+       cy="38"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="filter-mode-2"
+       inkscape:label="filter-mode-2"
+       cx="51.96"
+       cy="43.5"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="feedback-2"
+       inkscape:label="feedback-2"
+       cx="39.48"
+       cy="62"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="shape-2"
+       inkscape:label="shape-2"
+       cx="51.96"
+       cy="62"
+       r="1" />
+    <circle
+       style="fill:#00ff00;fill-opacity:1;stroke:none"
+       id="freq-cv-2"
+       inkscape:label="freq-cv-2"
+       cx="45.72"
+       cy="27"
+       r="1" />
+    <circle
+       style="fill:#00ff00;fill-opacity:1;stroke:none"
+       id="q-cv-2"
+       inkscape:label="q-cv-2"
+       cx="39.48"
+       cy="49"
+       r="1" />
+    <circle
+       style="fill:#00ff00;fill-opacity:1;stroke:none"
+       id="feedback-cv-2"
+       inkscape:label="feedback-cv-2"
+       cx="39.48"
+       cy="73"
+       r="1" />
+    <circle
+       style="fill:#00ff00;fill-opacity:1;stroke:none"
+       id="shape-cv-2"
+       inkscape:label="shape-cv-2"
+       cx="51.96"
+       cy="73"
+       r="1" />
+    <circle
+       style="fill:#0000ff;fill-opacity:1;stroke:none"
+       id="path-1"
+       inkscape:label="path-1"
+       cx="15.24"
+       cy="100"
+       r="1" />
+    <circle
+       style="fill:#0000ff;fill-opacity:1;stroke:none"
+       id="path-2"
+       inkscape:label="path-2"
+       cx="45.72"
+       cy="100"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="solver"
+       inkscape:label="solver"
+       cx="30.48"
+       cy="88"
+       r="1" />
+    <circle
+       style="fill:#0000ff;fill-opacity:1;stroke:none"
+       id="iterations"
+       inkscape:label="iterations"
+       cx="30.48"
+       cy="100"
+       r="1" />
+    <circle
+       style="fill:#00ff00;fill-opacity:1;stroke:none"
+       id="signal-in"
+       inkscape:label="signal-in"
+       cx="15.24"
+       cy="111.948"
+       r="1" />
+    <circle
+       style="fill:#0000ff;fill-opacity:1;stroke:none"
+       id="mix-out"
+       inkscape:label="mix-out"
+       cx="45.72"
+       cy="111.948"
+       r="1" />
+  </g>
+</svg>

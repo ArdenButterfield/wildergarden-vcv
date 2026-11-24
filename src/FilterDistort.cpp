@@ -24,7 +24,7 @@ struct FilterDistort : Module {
 	};
 	enum OutputId {
 		SIGNAL_OUTPUT,
-		ITERATIONS_OUTPUT,
+		STATE_OUTPUT,
 		OUTPUTS_LEN
 	};
 	enum LightId {
@@ -72,7 +72,7 @@ struct FilterDistort : Module {
 		configInput(SHAPE_CV_INPUT, "Distortion Shape CV");
 
 		configOutput(SIGNAL_OUTPUT, "Signal");
-		configOutput(ITERATIONS_OUTPUT, "Solver iterations (0V = none, 10V = max iterations or not converged)");
+		configOutput(STATE_OUTPUT, "Filter state contribution (s)");
 	}
 
 	void onReset() override {
@@ -136,9 +136,9 @@ struct FilterDistort : Module {
 		auto distorted = FeedbackLoop::distort(filtered * 0.2f, shapeParam) * 5.f;
 		naiveSolver.update(distorted * feedbackParam);
 		outputs[SIGNAL_OUTPUT].setVoltage(distorted);
-		// Iteration count rescaled so the solver's max iterations is 10V. Stays at 0V in naive
-		// mode, since there is nothing to solve.
-		outputs[ITERATIONS_OUTPUT].setVoltage(10.f * iterations / FeedbackLoop::MAX_ITERATIONS);
+		// The filter state's contribution to this sample's output, computed before the filter
+		// advanced
+		outputs[STATE_OUTPUT].setVoltage(loop.s);
 	}
 };
 
@@ -163,7 +163,7 @@ struct FilterDistortWidget : ModuleWidget {
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(21.48, 73.0)), module, FilterDistort::SHAPE_CV_INPUT));
 
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(21.48, 111.948)), module, FilterDistort::SIGNAL_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(15.24, 100.0)), module, FilterDistort::ITERATIONS_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(15.24, 100.0)), module, FilterDistort::STATE_OUTPUT));
 	}
 };
 

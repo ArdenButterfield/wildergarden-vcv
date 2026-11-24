@@ -62,6 +62,12 @@ struct FeedbackLoop {
 		hi = c + r;
 	}
 
+	// Where the solvers start: the previous output, which is close to the solution for audio-rate
+	// signals
+	float previous() const {
+		return filter.y[0];
+	}
+
 	// What the distortion feeds back to the filter's input when the filter outputs y
 	float feedback(const float y) const {
 		return distort(y * 0.2f, shape) * 5.f * gain;

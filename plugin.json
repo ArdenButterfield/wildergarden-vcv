@@ -44,16 +44,7 @@
       ]
     },
     {
-      "slug": "FilterDistort",
-      "name": "Filter Distort",
-      "description": "Multimode filter with feedback distortion",
-      "tags": [
-        "Filter",
-        "Distortion"
-      ]
-    },
-    {
-      "slug": "TStick",
+      "slug": "Mytstick",
       "name": "T-Stick Interface",
       "description": "Receives OSC from the T-Stick digital musical instrument and converts squeeze, touch and rotation into CV",
       "tags": [

@@ -10,6 +10,7 @@ extern Model* modelDimit;
 extern Model* modelPascal;
 extern Model* modelModmix;
 extern Model* modelFilterDistort;
+extern Model* modelDualFilterDistort;
 extern Model* modelTStick;
 // Declare each Model, defined in each module source file
 // extern Model* modelMyModule;

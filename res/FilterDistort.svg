@@ -5,6 +5,7 @@
    viewBox="0 0 30.48 128.5"
    version="1.1"
    id="svg1"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
@@ -36,5 +37,102 @@
        height="128.5"
        x="0"
        y="0" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="components"
+     inkscape:label="components"
+     style="display:none">
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="freq"
+       inkscape:label="freq"
+       cx="15.24"
+       cy="16"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="q"
+       inkscape:label="q"
+       cx="9"
+       cy="38"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="filter-mode"
+       inkscape:label="filter-mode"
+       cx="21.48"
+       cy="43.5"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="feedback"
+       inkscape:label="feedback"
+       cx="9"
+       cy="62"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="shape"
+       inkscape:label="shape"
+       cx="21.48"
+       cy="62"
+       r="1" />
+    <circle
+       style="fill:#00ff00;fill-opacity:1;stroke:none"
+       id="freq-cv"
+       inkscape:label="freq-cv"
+       cx="15.24"
+       cy="27"
+       r="1" />
+    <circle
+       style="fill:#00ff00;fill-opacity:1;stroke:none"
+       id="q-cv"
+       inkscape:label="q-cv"
+       cx="9"
+       cy="49"
+       r="1" />
+    <circle
+       style="fill:#00ff00;fill-opacity:1;stroke:none"
+       id="feedback-cv"
+       inkscape:label="feedback-cv"
+       cx="9"
+       cy="73"
+       r="1" />
+    <circle
+       style="fill:#00ff00;fill-opacity:1;stroke:none"
+       id="shape-cv"
+       inkscape:label="shape-cv"
+       cx="21.48"
+       cy="73"
+       r="1" />
+    <circle
+       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       id="solver"
+       inkscape:label="solver"
+       cx="15.24"
+       cy="88"
+       r="1" />
+    <circle
+       style="fill:#00ff00;fill-opacity:1;stroke:none"
+       id="signal-in"
+       inkscape:label="signal-in"
+       cx="9"
+       cy="111.948"
+       r="1" />
+    <circle
+       style="fill:#0000ff;fill-opacity:1;stroke:none"
+       id="signal-out"
+       inkscape:label="signal-out"
+       cx="21.48"
+       cy="111.948"
+       r="1" />
+    <circle
+       style="fill:#0000ff;fill-opacity:1;stroke:none"
+       id="state"
+       inkscape:label="state"
+       cx="15.24"
+       cy="100"
+       r="1" />
   </g>
 </svg>

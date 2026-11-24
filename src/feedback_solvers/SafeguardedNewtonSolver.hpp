@@ -11,7 +11,9 @@ struct SafeguardedNewtonSolver {
 	// before last, so it always converges.
 	// Sets iterations to the number of h and h' evaluations needed for the step or the bracket to
 	// fall below FeedbackLoop::TOLERANCE, or to maxIterations if it ran out of iterations.
-	static float findRootInBracket(const FeedbackLoop& loop, float lo, float hi, float y, const bool rising, const int maxIterations, int& iterations) {
+	// Loop is FeedbackLoop or DualFeedbackLoop: anything with residual() and residualDerivative().
+	template <typename Loop>
+	static float findRootInBracket(const Loop& loop, float lo, float hi, float y, const bool rising, const int maxIterations, int& iterations) {
 		iterations = maxIterations;
 		auto dx = hi - lo;
 		auto dxOld = dx;
@@ -52,14 +54,15 @@ struct SafeguardedNewtonSolver {
 		return y;
 	}
 
-	// Safeguarded Newton on the whole bracket, starting from the previous output, which is close to
-	// the solution for audio-rate signals.
+	// Safeguarded Newton on the whole bracket, starting from the previous solution (loop.previous()),
+	// which is close to the solution for audio-rate signals.
 	// Returns the signal to feed back to the filter's input, which isn't finite if the input isn't.
 	// Sets iterations as findRootInBracket() does.
-	float solve(const FeedbackLoop& loop, int& iterations) const {
+	template <typename Loop>
+	float solve(const Loop& loop, int& iterations) const {
 		float lo, hi;
 		loop.bracket(lo, hi);
-		const auto previous = loop.filter.y[0];
+		const auto previous = loop.previous();
 		const auto start = std::isfinite(previous) ? clamp(previous, lo, hi) : lo;
 		return loop.feedback(findRootInBracket(loop, lo, hi, start, true, FeedbackLoop::MAX_ITERATIONS, iterations));
 	}

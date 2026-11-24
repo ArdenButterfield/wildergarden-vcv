@@ -10,6 +10,7 @@ void init(Plugin* p) {
     p->addModel(modelPascal);
     p->addModel(modelModmix);
     p->addModel(modelFilterDistort);
+    p->addModel(modelDualFilterDistort);
     p->addModel(modelTStick);
     // Add modules here
 	// p->addModel(modelMyModule);

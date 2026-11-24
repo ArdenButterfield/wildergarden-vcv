@@ -16,7 +16,9 @@ struct NaiveSolver {
 	}
 
 	// Returns the signal to feed back to the filter's input. Sets iterations to 0.
-	float solve(const FeedbackLoop& loop, int& iterations) const {
+	// Works with any loop (FeedbackLoop or DualFeedbackLoop), as it never looks at it.
+	template <typename Loop>
+	float solve(const Loop& loop, int& iterations) const {
 		iterations = 0;
 		return previousFeedback;
 	}
