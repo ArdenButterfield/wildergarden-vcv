@@ -71,7 +71,7 @@ jobs:
 
   build-mac-x64:
     name: mac_x64
-    runs-on: macos-13
+    runs-on: macos-latest
     strategy:
       fail-fast: false
     steps:
@@ -97,7 +97,7 @@ jobs:
 
   build-mac-arm64:
     name: mac_arm64
-    runs-on: macos-13
+    runs-on: macos-latest
     strategy:
       fail-fast: false
     steps:
