@@ -438,7 +438,7 @@ struct TStick : Module {
 #endif
 	}
 
-	// Match on suffix so the module works with any T-Stick ID, not only TStick_581
+	// Match on suffix so the module works with any T-Stick ID
 	void handleMessage(const OscMessage& msg) {
 		const std::string& a = msg.address;
 		if (endsWith(a, "/instrument/squeeze")) {
@@ -772,4 +772,4 @@ struct TStickWidget : ModuleWidget {
 };
 
 
-Model* modelTStick = createModel<TStick, TStickWidget>("TStick");
+Model* modelTStick = createModel<TStick, TStickWidget>("Mytstick");
