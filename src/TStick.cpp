@@ -733,8 +733,8 @@ struct TStickWidget : ModuleWidget {
 
 		addParam(createLightParamCentered<VCVLightLatch<MediumSimpleLight<GreenLight>>>(mm2px(Vec(left, 20.0)), module, TStick::LISTEN_PARAM, TStick::LISTEN_LIGHT));
 		addChild(createLightCentered<MediumLight<YellowLight>>(mm2px(Vec(right, 20.0)), module, TStick::RECEIVE_LIGHT));
-		addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(left, 37.0)), module, TStick::SCALE_PARAM));
-		addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(right, 37.0)), module, TStick::GROUP_PARAM));
+		addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(left, 34.0)), module, TStick::SCALE_PARAM));
+		addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(right, 34.0)), module, TStick::GROUP_PARAM));
 
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(left, 52.0)), module, TStick::SQUEEZE_OUTPUT));
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(right, 52.0)), module, TStick::TOUCH_GATE_OUTPUT));
